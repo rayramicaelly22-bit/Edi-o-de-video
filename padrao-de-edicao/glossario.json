@@ -1,0 +1,17 @@
+{
+  "_comentario": "Correções de ortografia e de marca aplicadas às legendas. Chave: como a transcrição escreveu (sem pontuação). Valor: como deve aparecer. Acrescente novas correções conforme os vídeos.",
+  "correcoes": {
+    "Cloud": "Claude",
+    "Cláudio": "Claude",
+    "Claudio": "Claude",
+    "garrões": "garranchos",
+    "bananava": "embananava",
+    "ferida": "querida"
+  },
+  "frases": {
+    "me querida": "minha querida"
+  },
+  "revisar": [
+    "Aretha Life Hub (confirmar o nome da comunidade)"
+  ]
+}
