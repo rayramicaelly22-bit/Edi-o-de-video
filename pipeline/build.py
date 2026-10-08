@@ -20,6 +20,7 @@ FIX = {
     "garrões": "garranchos",
     "bananava": "embananava",
     "ferida": "querida",
+    "Aretha": "Areta",
 }
 
 WIDTH, HEIGHT = 1080, 1920
@@ -39,11 +40,13 @@ def load(name):
 
 
 def words_in(name, start, end):
+    # palavras que começam dentro do trecho; o fim é limitado ao trecho
+    # (os tempos do Whisper nem sempre são exatos, então não descartamos palavras)
     ws = []
     for seg in load(name):
         for w in seg["words"]:
-            if w["s"] >= start and w["e"] <= end + 0.05 and w["w"]:
-                ws.append(w)
+            if start <= w["s"] < end and w["w"]:
+                ws.append({"w": w["w"], "s": max(w["s"], start), "e": min(max(w["e"], w["s"] + 0.2), end)})
     return ws
 
 
@@ -101,7 +104,7 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Legenda,Arial,58,&H00FFFFFF,&H0000FFFF,&H00000000,&H64000000,-1,0,0,0,100,100,0,0,1,4,1,2,80,80,360,1
+Style: Legenda,Arial,58,&H00E7F1F6,&H0000FFFF,&H002F1F6D,&H64000000,-1,0,0,0,100,100,0,0,1,4,1,2,80,80,360,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -112,11 +115,10 @@ with open("subs.ass", "w", encoding="utf-8") as f:
         t = t.replace("me querida", "minha querida")
         f.write(f"Dialogue: 0,{ts(a)},{ts(b)},Legenda,,0,0,0,,{t}\n")
 
-# 3) motion graphics (overlay com alfa) + legendas queimadas no vídeo
-subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", "base.mp4",
-                "-i", "../motion/out/overlay.mov",
-                "-filter_complex", "[0:v][1:v]overlay=0:0:shortest=1[v];[v]ass=subs.ass[vout]",
-                "-map", "[vout]", "-map", "0:a",
+# 3) motion atrás da pessoa (compose.py) + legendas queimadas por cima de tudo
+subprocess.run(["python", "compose.py"], check=True)
+subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", "motion_base.mp4",
+                "-vf", "ass=subs.ass",
                 "-c:v", "libx264", "-preset", "medium", "-crf", "20",
                 "-c:a", "copy", "final_reels.mp4"], check=True)
 

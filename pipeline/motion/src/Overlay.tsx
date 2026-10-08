@@ -14,46 +14,46 @@ const FPS = 30;
 const f = (s: number) => Math.round(s * FPS);
 export const OVERLAY_SECONDS = 72.4;
 
-const INK = "#111111";
-const ACCENT = "#FFD400";
+// Paleta da Areta: bordô e off-white
+const INK = "#6D1F2F";
+const ACCENT = "#F6F1E7";
 const FONT = "Arial, Helvetica, sans-serif";
 
-// Título: palavras entrando uma a uma, em grande e translúcido
-const KineticTitle: React.FC = () => {
+// Título: cada linha é uma faixa bordô que desliza e revela o texto em off-white
+const TitleLine: React.FC<{text: string; delay: number}> = ({text, delay}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const words = ["Coisas", "que", "eu", "parei", "de", "fazer"];
+  const p = spring({frame: frame - delay, fps, config: {damping: 200}});
   return (
-    <AbsoluteFill style={{alignItems: "center", justifyContent: "flex-start", paddingTop: 170}}>
+    <div style={{overflow: "hidden"}}>
       <div
         style={{
-          width: 960,
-          textAlign: "center",
+          transform: `translateX(${(1 - p) * -105}%)`,
+          background: INK,
+          color: ACCENT,
           fontFamily: FONT,
           fontWeight: 900,
-          fontSize: 150,
-          lineHeight: 0.95,
+          fontSize: 92,
+          lineHeight: 1.05,
           textTransform: "uppercase",
-          color: "rgba(255,255,255,0.28)",
+          padding: "16px 36px",
+          borderRadius: 16,
+          whiteSpace: "nowrap",
         }}
       >
-        {words.map((w, i) => {
-          const p = spring({frame: frame - i * 4, fps, config: {damping: 200}});
-          return (
-            <span
-              key={i}
-              style={{
-                display: "inline-block",
-                marginRight: 22,
-                opacity: p,
-                transform: `translateY(${(1 - p) * 70}px)`,
-              }}
-            >
-              {w}
-            </span>
-          );
-        })}
+        {text}
       </div>
+    </div>
+  );
+};
+
+const KineticTitle: React.FC = () => {
+  return (
+    <AbsoluteFill
+      style={{alignItems: "center", justifyContent: "flex-start", paddingTop: 260, display: "flex", flexDirection: "column", gap: 18}}
+    >
+      <TitleLine text="Coisas que eu" delay={0} />
+      <TitleLine text="parei de fazer" delay={9} />
     </AbsoluteFill>
   );
 };
@@ -95,8 +95,8 @@ const ItemChip: React.FC<{num: string; label: string; duration: number}> = ({num
       </div>
       <div
         style={{
-          background: "#FFFFFF",
-          color: INK,
+          background: INK,
+          color: ACCENT,
           fontFamily: FONT,
           fontWeight: 700,
           fontSize: 60,
@@ -126,7 +126,7 @@ const FloatingBadge: React.FC = () => {
         transform: `translateY(${bob + (1 - p) * 120}px) rotate(${tilt}deg) scale(${p})`,
         opacity: p,
         background: INK,
-        color: "#FFFFFF",
+        color: ACCENT,
         fontFamily: FONT,
         fontWeight: 900,
         fontSize: 58,
@@ -154,7 +154,7 @@ const FillingChart: React.FC = () => {
         top: 1080,
         height: 330,
         boxSizing: "border-box",
-        background: "rgba(255,255,255,0.94)",
+        background: "rgba(246,241,231,0.96)",
         borderRadius: 28,
         padding: "34px 50px",
         boxShadow: "0 20px 50px rgba(0,0,0,0.25)",
@@ -172,7 +172,7 @@ const FillingChart: React.FC = () => {
               style={{
                 flex: 1,
                 height: `${h * p * 100}%`,
-                background: i === 3 ? ACCENT : INK,
+                background: i === 3 ? INK : "rgba(109,31,47,0.45)",
                 borderRadius: 12,
               }}
             />

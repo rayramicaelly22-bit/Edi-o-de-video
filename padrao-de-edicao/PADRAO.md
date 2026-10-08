@@ -2,6 +2,8 @@
 
 Padrão para os vídeos de fala direta (talking head) em formato Reels/TikTok. O objetivo é que os vídeos fiquem com a sua voz e o seu jeito de falar, com um acabamento consistente e sem exagero.
 
+Também disponível como skill do Claude Code (`~/.claude/skills/edicao-areta`), com cópia dos scripts prontos para rodar. Peça para "editar no padrão da Areta" para usá-la.
+
 ## Princípios de autenticidade
 
 - **A fala é a estrela.** Motion graphics só destacam o que você já disse; nunca substituem a fala nem inventam informação.
@@ -12,10 +14,12 @@ Padrão para os vídeos de fala direta (talking head) em formato Reels/TikTok. O
 
 ## Estrutura
 
-1. **Gancho / título** (0–4 s): palavras entrando em grande e translúcido, com o assunto do vídeo.
+1. **Gancho / título** (0–4 s): linhas em bloco bordô que deslizam da esquerda, revelando o texto em off-white, com o assunto do vídeo.
 2. **Itens numerados** (cada um com um cartão `01`, `02`...): o cartão aparece quando você começa o item e some antes do próximo.
 3. **Apoio visual** (opcional): um gráfico ilustrativo ou um cartão flutuando com o nome da ferramenta, só quando combinar com a fala.
 4. **Chamada para comentar** (último trecho): botão "Comenta: PARTE 2" ou equivalente.
+
+Todo motion é composto **atrás da pessoa** (segmentação com MediaPipe, em `pipeline/compose.py`), para nunca tampar o rosto. Atenção: um elemento posicionado na área do corpo fica escondido atrás da pessoa — é o comportamento esperado dessa composição. Se um cartão precisa ficar sempre visível, posicione-o fora da silhueta (laterais ou acima da cabeça) antes de renderizar.
 
 ## Cortes
 
@@ -27,13 +31,14 @@ Padrão para os vídeos de fala direta (talking head) em formato Reels/TikTok. O
 ## Legendas
 
 - Fonte: **Arial, negrito**. Tamanho **58** (em 1080x1920).
-- Cor branca, com contorno preto de 4 px. Destaque amarelo `#FFD400` só se for usar.
+- Texto off-white `#F6F1E7`, com contorno bordô `#6D1F2F` de 4 px.
 - Até **4 palavras por linha**, na parte inferior, com margem de **360 px** (fica fora da área dos ícones do Reels).
+- Gere a legenda a partir de palavras com **início** dentro do trecho cortado; não exija que o fim também caiba — os tempos por palavra do Whisper às vezes erram, e isso pode descartar trechos inteiros da fala (ver `words_in` em `pipeline/build.py`).
 - Ortografia: passe pelo glossário (`glossario.json`) e revise as palavras que a transcrição erra. Nomes de marcas e da comunidade devem ser confirmados por você.
 
 ## Motion graphics (paleta e estilo)
 
-- Cores: preto `#111111`, amarelo `#FFD400`, branco `#FFFFFF`. Não use logos oficiais de marcas de terceiros.
+- Cores: **bordô `#6D1F2F`** e **off-white `#F6F1E7`** (cores da Areta). Não use logos oficiais de marcas de terceiros.
 - Cartões: retângulos arredondados (raio 18 px), entrada com mola (`spring`), saída em fade.
 - Animações de texto: palavras entrando uma a uma com atraso de 4 frames.
 - Gráficos: barras preenchendo em sequência, sem números.
