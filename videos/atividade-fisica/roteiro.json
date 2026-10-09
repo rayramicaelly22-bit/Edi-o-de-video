@@ -1,0 +1,110 @@
+{
+  "titulo": "Atividade física: importância, dados e curiosidades",
+  "voz": "pm_alex",
+  "velocidade": 1.0,
+  "pausaEntreFalas": 0.3,
+  "cenas": [
+    {
+      "id": "gancho",
+      "pausaAntes": 0.6,
+      "pausaDepois": 2.2,
+      "falas": [
+        {"id": "l01", "texto": "Imagine um remédio que protege o coração, melhora o humor, ajuda a memória e ainda aumenta as suas chances de viver mais."},
+        {"id": "l02", "texto": "É de graça, não precisa de receita, e você pode começar hoje."},
+        {"id": "l03", "texto": "O nome dele? Atividade física."}
+      ]
+    },
+    {
+      "id": "importancia",
+      "pausaAntes": 0.4,
+      "falas": [
+        {"id": "l04", "texto": "Segundo a Organização Mundial da Saúde, quem se mexe com regularidade reduz em dezenove por cento o risco de doenças do coração e AVC."},
+        {"id": "l05", "texto": "O de diabetes cai dezessete por cento. O de depressão e demência, até trinta e dois. E o de vários tipos de câncer, até vinte e oito por cento."},
+        {"id": "l06", "texto": "Já quem não se mexe o suficiente tem um risco de morte de vinte a trinta por cento maior."}
+      ]
+    },
+    {
+      "id": "recomendacao",
+      "pausaAntes": 0.5,
+      "falas": [
+        {"id": "l07", "texto": "Mas quanto é suficiente?"},
+        {"id": "l08", "texto": "Para adultos, de cento e cinquenta a trezentos minutos por semana de atividade moderada, como uma caminhada rápida."},
+        {"id": "l09", "texto": "Uns trinta minutos, cinco dias por semana. Ou metade disso, se for intensa, como uma corrida."},
+        {"id": "l10", "texto": "E exercícios de força, pelo menos duas vezes por semana."}
+      ]
+    },
+    {
+      "id": "mundo",
+      "pausaAntes": 0.5,
+      "falas": [
+        {"id": "l11", "texto": "Só que o mundo anda parado demais."},
+        {"id": "l12", "texto": "Em dois mil e vinte e dois, quase um em cada três adultos, cerca de um vírgula oito bilhão de pessoas, não chegou a esse mínimo."},
+        {"id": "l13", "texto": "E, se nada mudar, serão trinta e cinco por cento em dois mil e trinta."},
+        {"id": "l14", "texto": "Entre os adolescentes, é pior: mais de oito em cada dez não se mexem o quanto deveriam."}
+      ]
+    },
+    {
+      "id": "brasil",
+      "pausaAntes": 0.5,
+      "falas": [
+        {"id": "l15", "texto": "E no Brasil?"},
+        {"id": "l16", "texto": "Segundo o Ministério da Saúde, só quarenta e dois por cento dos adultos das capitais se exercitam o suficiente no tempo livre."},
+        {"id": "l17", "texto": "Em dois mil e nove, eram trinta por cento. Melhorou, mas ainda é menos da metade."}
+      ]
+    },
+    {
+      "id": "dezmil",
+      "pausaAntes": 0.6,
+      "falas": [
+        {"id": "l18", "texto": "Agora, as curiosidades."},
+        {"id": "l19", "texto": "Sabe a meta de dez mil passos por dia? Ela não nasceu na ciência, e sim no marketing."},
+        {"id": "l20", "texto": "Veio de um pedômetro japonês dos anos sessenta, chamado manpo-kei: o medidor de dez mil passos."}
+      ]
+    },
+    {
+      "id": "setemil",
+      "pausaAntes": 0.45,
+      "falas": [
+        {"id": "l21", "texto": "E a ciência? Em um estudo de dois mil e vinte e cinco, quem dava sete mil passos por dia tinha um risco de morte quarenta e sete por cento menor do que quem dava dois mil."}
+      ]
+    },
+    {
+      "id": "lanchinhos",
+      "pausaAntes": 0.45,
+      "falas": [
+        {"id": "l22", "texto": "Até lanchinhos de exercício contam."},
+        {"id": "l23", "texto": "Em quem não treinava, três explosões de um a dois minutos por dia, como subir escada rápido, foram ligadas a um risco de morte até quarenta por cento menor."}
+      ]
+    },
+    {
+      "id": "cerebro",
+      "pausaAntes": 0.45,
+      "falas": [
+        {"id": "l24", "texto": "E o cérebro agradece: em idosos, um ano de caminhadas fez o hipocampo, área ligada à memória, crescer cerca de dois por cento. Como voltar um ou dois anos no tempo."}
+      ]
+    },
+    {
+      "id": "sentado",
+      "pausaAntes": 0.45,
+      "falas": [
+        {"id": "l25", "texto": "E quem passa o dia sentado? Uma hora ou pouco mais de atividade moderada por dia parece anular o risco extra de ficar mais de oito horas na cadeira."}
+      ]
+    },
+    {
+      "id": "fechamento",
+      "pausaAntes": 0.6,
+      "pausaDepois": 1.4,
+      "falas": [
+        {"id": "l26", "texto": "Resumindo: você não precisa virar atleta. Cada movimento conta."},
+        {"id": "l27", "texto": "Comece com dez minutos hoje. Vá de escada, desça um ponto antes, dance na sala."},
+        {"id": "l28", "texto": "Seu corpo e sua cabeça agradecem."}
+      ]
+    },
+    {
+      "id": "fontes",
+      "pausaAntes": 0.2,
+      "duracaoMinima": 6.0,
+      "falas": []
+    }
+  ]
+}

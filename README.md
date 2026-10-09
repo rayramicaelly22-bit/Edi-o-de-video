@@ -14,6 +14,10 @@ Pasta `skills/remotion-best-practices/`: skill oficial da Remotion (React para v
 
 Origem: https://github.com/remotion-dev/skills (copiada da branch `main`).
 
+## Vídeos
+
+- [`videos/atividade-fisica/`](videos/atividade-fisica/): vídeo horizontal todo em motion graphics, com narração por IA e trilha original, sobre importância, dados e curiosidades da atividade física.
+
 ## Como usar
 
 Copie a pasta para a skills do Claude Code:
