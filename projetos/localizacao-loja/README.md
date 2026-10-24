@@ -18,7 +18,7 @@ trilha e efeitos.
 | 7 | `scripts/city_geometry.py` | Cidade detalhada para o render realista: telhados de quatro e duas águas com beiral (cerâmica, fibrocimento, metal ou laje), oitões, caixas d'água, placas solares, calçada elevada com meio-fio, faixas, muros de lote com portões, grama das praças, carros estacionados, ~80 mil árvores (NDVI, quintais, calçadas e praças) e a Arena Verde (campo com marcação, pista, arquibancada em volta e o pórtico de entrada com o letreiro). |
 | 8 | `npx tsx scripts/export_frames.ts` | Exporta a câmera e as animações de cada frame (`public/scene/frames.json`), as mesmas da Remotion. |
 | 9 | `scripts/blender_build.py` | Monta a cena no Blender: materiais procedurais, céu físico, sol, névoa atmosférica e animações (`.cache/cidade.blend`). |
-| 10 | `scripts/blender_render.py` | Renderiza os 1081 frames no Cycles em 720x1280 (retomável). |
+| 10 | `scripts/blender_render.py` | Renderiza os 1081 frames no Cycles em 540x960 (retomável). |
 | 11 | `scripts/cycles_post.sh` | Amplia para 1080x1920 com tratamento leve e grava `public/render/drone3d_graded.mp4`. |
 | 12 | `scripts/finalize.sh` | Motion graphics + legendas por cima do voo e áudio normalizado em -14 LUFS. |
 
@@ -27,7 +27,7 @@ pura do tempo (`src/scene/camera.ts`); os estados animados (rota, pin, anéis) f
 Os dois são usados no 3D, no exportador para o Blender e para prender as etiquetas aos pontos do mapa.
 
 A primeira versão do voo era renderizada em WebGL (Three.js na Remotion, composição `Drone3D`, com tilt-shift em
-`scripts/grade.sh`). Ela continua no projeto como prévia rápida (alguns minutos, contra ~3h30 do Cycles em CPU).
+`scripts/grade.sh`). Ela continua no projeto como prévia rápida (alguns minutos, contra ~1h30 do Cycles em CPU).
 
 ## Rodando de novo
 
@@ -44,7 +44,7 @@ python fetch_overture.py && python route.py && python fetch_satellite.py && pyth
 python narration.py && python audio.py && python city_geometry.py
 cd .. && npx tsx scripts/export_frames.ts
 python scripts/blender_build.py            # com o Python que tem o bpy
-python scripts/blender_render.py           # ~12 s por frame em 4 núcleos; pode interromper e retomar
+python scripts/blender_render.py           # ~5 s por frame em 4 núcleos; pode interromper e retomar
 scripts/cycles_post.sh
 scripts/finalize.sh out/localizacao-loja.mp4
 ```

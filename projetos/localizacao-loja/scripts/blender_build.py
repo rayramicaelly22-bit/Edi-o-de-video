@@ -16,7 +16,7 @@ from mathutils import Matrix, Vector
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".cache"
 SCENE_DIR = ROOT / "public/scene"
-RES = (720, 1280)          # renderizado em 2/3 e ampliado para 1080x1920 no pós
+RES = (540, 960)           # renderizado na metade e ampliado para 1080x1920 no pós (~5 s por frame em 4 núcleos)
 SUN_AZ, SUN_EL = 250.0, 36.0
 HAZE_AMOUNT = float(sys.argv[3]) if len(sys.argv) > 3 else 0.8
 HAZE_COLOR = (0.5, 0.56, 0.64, 1.0)
@@ -1034,7 +1034,7 @@ def build():
     sc.frame_end = len(FRAMES)
     cy = sc.cycles
     cy.device = "CPU"
-    cy.samples = 8
+    cy.samples = 5
     cy.adaptive_threshold = 0.05
     cy.use_denoising = True
     cy.denoising_prefilter = "FAST"
@@ -1048,12 +1048,7 @@ def build():
     cy.caustics_reflective = False
     cy.caustics_refractive = False
     r.use_persistent_data = True
-    r.use_motion_blur = True
-    r.motion_blur_shutter = 0.35
-    # desfoque só da câmera e do pin: nos instanciadores e malhas animadas ele custaria ~20% a mais por frame
-    for ob in bpy.data.objects:
-        if ob.type != "CAMERA" and ob.name not in ("pin", "brilho_ponta"):
-            ob.cycles.use_motion_blur = False
+    r.use_motion_blur = False      # o desfoque de movimento custava ~20% a mais por frame
     try:
         sc.view_settings.view_transform = "AgX"
         sc.view_settings.look = "AgX - Medium High Contrast"
