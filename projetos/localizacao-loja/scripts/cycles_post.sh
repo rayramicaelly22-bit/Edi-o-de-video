@@ -11,9 +11,12 @@ n=$(ls "$frames"/frame_*.png | wc -l)
 expected=$(python3 -c "import json; print(len(json.load(open('public/scene/frames.json'))['frames']))")
 [ "$n" -eq "$expected" ] || { echo "faltam frames: $n de $expected em $frames" >&2; exit 1; }
 mkdir -p "$(dirname "$out")"
+# frames ampliados (540x960) ganham mais nitidez; frames já em 1080x1920 (--max) só um toque
+width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$frames/frame_0001.png")
+sharp=0.6; [ "$width" -ge 1080 ] && sharp=0.25
 ffmpeg -y -v error -framerate 30 -start_number 1 -i "$frames/frame_%04d.png" -vf "
 scale=1080:1920:flags=lanczos,
-unsharp=5:5:0.6:5:5:0,
+unsharp=5:5:$sharp:5:5:0,
 eq=contrast=1.03:saturation=1.05,
 format=yuv420p" -c:v libx264 -preset slow -crf 14 -pix_fmt yuv420p -movflags +faststart "$out"
 echo "ok: $out ($n frames)"

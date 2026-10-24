@@ -44,7 +44,7 @@ python fetch_overture.py && python route.py && python fetch_satellite.py && pyth
 python narration.py && python audio.py && python city_geometry.py
 cd .. && npx tsx scripts/export_frames.ts
 python scripts/blender_build.py            # com o Python que tem o bpy
-python scripts/blender_render.py           # ~5 s por frame em 4 núcleos; pode interromper e retomar
+python scripts/blender_render.py           # ~5 s por frame em 4 núcleos (--max: ~44 s); pode interromper e retomar
 scripts/cycles_post.sh
 scripts/finalize.sh out/localizacao-loja.mp4
 ```
@@ -79,7 +79,7 @@ cd scripts
 ../.venv/bin/python build_scene.py && ../.venv/bin/python audio.py && ../.venv/bin/python city_geometry.py
 cd .. && npx tsx scripts/export_frames.ts
 .venv/bin/python scripts/blender_build.py
-.venv/bin/python scripts/blender_render.py --gpu   # com placa de vídeo dá para usar --percent 200 --samples 12 --blur
+.venv/bin/python scripts/blender_render.py --gpu --max   # --max: 1080x1920, 12 amostras, desfoque de movimento
 scripts/cycles_post.sh
 scripts/finalize.sh out/localizacao-loja.mp4
 ```

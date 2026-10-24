@@ -1,12 +1,13 @@
 """Renderiza frames da cena .cache/cidade.blend (montada por blender_build.py) em PNG.
 
 Uso: python scripts/blender_render.py [--frames 91,301 | --range 1-1081] [--out DIR] [--samples N] [--percent P]
-                                      [--threads T --part i/n] [--gpu] [--blur]
+                                      [--threads T --part i/n] [--gpu] [--blur] [--max]
 Frames já renderizados são pulados, então dá para interromper e retomar a renderização completa.
 Com --part, cada processo pega um frame a cada n (ex.: dois processos com 2 threads cada, --part 0/2 e --part 1/2),
 o que sobrepõe as etapas de preparação da cena, que usam um núcleo só.
 Com placa de vídeo (--gpu), dá para subir a qualidade: --percent 200 renderiza direto em 1080x1920, e --blur liga o
-desfoque de movimento da câmera.
+desfoque de movimento da câmera. --max junta tudo: 1080x1920, 12 amostras, desfoque e denoiser no modo mais preciso
+(~40 s por frame em 4 núcleos de CPU).
 """
 import argparse
 import time
@@ -27,7 +28,12 @@ ap.add_argument("--threads", type=int, default=0)
 ap.add_argument("--part", default="0/1")
 ap.add_argument("--gpu", action="store_true", help="usa a placa de vídeo (OptiX, CUDA, HIP, Metal ou oneAPI), se houver")
 ap.add_argument("--blur", action="store_true", help="liga o desfoque de movimento da câmera")
+ap.add_argument("--max", action="store_true", help="qualidade máxima: 1080x1920, 12 amostras, desfoque e denoiser preciso")
 args = ap.parse_args()
+if args.max:
+    args.percent = args.percent or 200
+    args.samples = args.samples or 12
+    args.blur = True
 
 bpy.ops.wm.open_mainfile(filepath=args.blend)
 sc = bpy.context.scene
@@ -41,6 +47,13 @@ if args.threads:
 if args.blur:
     sc.render.use_motion_blur = True
     sc.render.motion_blur_shutter = 0.35
+    # só a câmera e o pin se movem: desfoque por objeto nos instanciadores e malhas paradas só custaria tempo
+    for ob in bpy.data.objects:
+        if ob.type != "CAMERA" and ob.name not in ("pin", "brilho_ponta"):
+            ob.cycles.use_motion_blur = False
+if args.max:
+    sc.cycles.denoising_prefilter = "ACCURATE"
+    sc.cycles.denoising_quality = "HIGH"
 if args.gpu:
     prefs = bpy.context.preferences.addons["cycles"].preferences
     chosen = None
