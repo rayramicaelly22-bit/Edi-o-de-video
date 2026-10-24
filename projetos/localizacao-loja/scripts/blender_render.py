@@ -1,10 +1,12 @@
 """Renderiza frames da cena .cache/cidade.blend (montada por blender_build.py) em PNG.
 
 Uso: python scripts/blender_render.py [--frames 91,301 | --range 1-1081] [--out DIR] [--samples N] [--percent P]
-                                      [--threads T --part i/n]
+                                      [--threads T --part i/n] [--gpu] [--blur]
 Frames já renderizados são pulados, então dá para interromper e retomar a renderização completa.
 Com --part, cada processo pega um frame a cada n (ex.: dois processos com 2 threads cada, --part 0/2 e --part 1/2),
 o que sobrepõe as etapas de preparação da cena, que usam um núcleo só.
+Com placa de vídeo (--gpu), dá para subir a qualidade: --percent 200 renderiza direto em 1080x1920, e --blur liga o
+desfoque de movimento da câmera.
 """
 import argparse
 import time
@@ -23,6 +25,8 @@ ap.add_argument("--percent", type=int, default=None)
 ap.add_argument("--blend", default=str(ROOT / ".cache/cidade.blend"))
 ap.add_argument("--threads", type=int, default=0)
 ap.add_argument("--part", default="0/1")
+ap.add_argument("--gpu", action="store_true", help="usa a placa de vídeo (OptiX, CUDA, HIP, Metal ou oneAPI), se houver")
+ap.add_argument("--blur", action="store_true", help="liga o desfoque de movimento da câmera")
 args = ap.parse_args()
 
 bpy.ops.wm.open_mainfile(filepath=args.blend)
@@ -34,6 +38,28 @@ if args.percent:
 if args.threads:
     sc.render.threads_mode = "FIXED"
     sc.render.threads = args.threads
+if args.blur:
+    sc.render.use_motion_blur = True
+    sc.render.motion_blur_shutter = 0.35
+if args.gpu:
+    prefs = bpy.context.preferences.addons["cycles"].preferences
+    chosen = None
+    for kind in ("OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"):
+        try:
+            prefs.compute_device_type = kind
+        except TypeError:
+            continue
+        prefs.get_devices()
+        if any(d.type == kind for d in prefs.devices):
+            for d in prefs.devices:
+                d.use = d.type == kind
+            chosen = kind
+            break
+    if chosen:
+        sc.cycles.device = "GPU"
+        print(f"GPU {chosen}: {', '.join(d.name for d in prefs.devices if d.use)}", flush=True)
+    else:
+        print("nenhuma GPU compatível encontrada; renderizando na CPU", flush=True)
 
 if args.frames:
     frames = [int(x) for x in args.frames.split(",")]

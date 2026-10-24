@@ -10,3 +10,5 @@ public/scene/*.jpg
 public/scene/frames.json
 # cache do Python
 __pycache__/
+# a narração aprovada é versionada (a voz sintetizada muda a cada geração; trilha, efeitos e mix saem dela)
+!public/audio/narration.wav

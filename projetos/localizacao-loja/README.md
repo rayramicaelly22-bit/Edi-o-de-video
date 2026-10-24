@@ -63,6 +63,31 @@ Para trocar a voz, o texto ou o ritmo: edite `LINES`, `VOICE_SID` (0–4 feminin
 em `scripts/narration.py` e rode os passos 5, 6 e 12 (o voo 3D só precisa ser refeito se `src/timeline.json` mudar
 antes da chegada na loja).
 
+## Renderizar no seu computador
+
+O render do Cycles é a parte pesada: ~1h30 em 4 núcleos de CPU, minutos com placa de vídeo. Num computador com
+Git, Node 22, Python 3.13 e FFmpeg (no Windows, use o Git Bash e troque `.venv/bin/python` por `.venv/Scripts/python`):
+
+```bash
+git clone https://github.com/rayramicaelly22-bit/Edi-o-de-video.git
+cd Edi-o-de-video && git checkout claude/store-location-video-k806kk
+cd projetos/localizacao-loja && npm install
+python3.13 -m venv .venv
+.venv/bin/python -m pip install bpy==5.2.3 numpy shapely pyarrow pyproj rasterio networkx scipy pillow soundfile
+cd scripts
+../.venv/bin/python fetch_overture.py && ../.venv/bin/python route.py && ../.venv/bin/python fetch_satellite.py
+../.venv/bin/python build_scene.py && ../.venv/bin/python audio.py && ../.venv/bin/python city_geometry.py
+cd .. && npx tsx scripts/export_frames.ts
+.venv/bin/python scripts/blender_build.py
+.venv/bin/python scripts/blender_render.py --gpu   # com placa de vídeo dá para usar --percent 200 --samples 12 --blur
+scripts/cycles_post.sh
+scripts/finalize.sh out/localizacao-loja.mp4
+```
+
+A narração aprovada já vem no repositório (`public/audio/narration.wav` e `.json`), então não é preciso baixar os
+modelos de voz; `audio.py` refaz a trilha, os efeitos e a mixagem a partir dela. O vídeo final sai em
+`out/localizacao-loja.mp4`.
+
 ## Premissas sobre a localização
 
 - O nº 885 vem do cadastro de endereços do Pará (OpenAddresses, no tema `addresses` do Overture): os dois pontos
