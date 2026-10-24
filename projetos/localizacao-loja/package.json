@@ -1,0 +1,28 @@
+{
+  "name": "localizacao-loja",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render:3d": "remotion render Drone3D out/drone3d.mp4 --gl=swangle --concurrency=2 --crf=10",
+    "grade": "scripts/grade.sh out/drone3d.mp4 public/render/drone3d_graded.mp4",
+    "render": "scripts/finalize.sh out/localizacao-loja.mp4"
+  },
+  "dependencies": {
+    "@fontsource/montserrat": "5.3.0",
+    "@react-three/fiber": "9.8.2",
+    "@remotion/cli": "4.0.538",
+    "@remotion/media": "4.0.538",
+    "@remotion/three": "4.0.538",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "remotion": "4.0.538",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "4.0.538",
+    "@remotion/renderer": "4.0.538",
+    "@types/react": "19.3.0",
+    "@types/three": "0.186.0",
+    "typescript": "5.9.3"
+  }
+}

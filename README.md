@@ -11,8 +11,16 @@ Pasta `skills/remotion-best-practices/`: skill oficial da Remotion (React para v
 - **áudio e mídia** (`remotion-multimedia`): vídeos, áudio e imagens
 - **criação de projeto** (`remotion-create`) e **preview** (`remotion-studio`)
 - **renderização** (`remotion-render`): exporta o vídeo final
+- **mapas** (`remotion-maps`): rotas animadas, marcadores, MapLibre/Mapbox/MapTiler e voos 3D (Cesium)
+- **interatividade** (`remotion-interactivity`) e **apps/SaaS** (`remotion-saas`)
 
-Origem: https://github.com/remotion-dev/skills (copiada da branch `main`).
+Origem: https://github.com/remotion-dev/skills (copiada da branch `main`, versão 4.0.538, commit `6c67adc`).
+
+## Projetos
+
+- [`projetos/localizacao-loja/`](projetos/localizacao-loja): vídeo de Stories (9:16) mostrando, como um voo de
+  drone, o caminho do centro de Paragominas até a loja, com mapa 3D gerado de dados abertos, narração com IA,
+  trilha e motion graphics.
 
 ## Como usar
 

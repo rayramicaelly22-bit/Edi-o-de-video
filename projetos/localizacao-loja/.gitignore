@@ -1,0 +1,10 @@
+# downloads e modelos (regeneráveis pelos scripts)
+.cache/
+# renders
+out/
+public/render/
+# assets gerados pesados (scripts/fetch_satellite.py e scripts/build_scene.py)
+public/scene/scene.bin
+public/scene/*.jpg
+# cache do Python
+__pycache__/

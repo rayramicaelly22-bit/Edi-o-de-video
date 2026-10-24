@@ -1,0 +1,1187 @@
+{
+ "voice": "Supertonic 3 (sid 0, velocidade 1.12)",
+ "lines": [
+  {
+   "id": "intro",
+   "text": "Sabe onde fica a nossa loja aqui em Paragominas? Vem que eu te mostro!",
+   "start": 0.45,
+   "end": 4.26,
+   "words": [
+    {
+     "text": "Sabe",
+     "start": 0.45,
+     "end": 0.83
+    },
+    {
+     "text": "onde",
+     "start": 0.83,
+     "end": 1.07
+    },
+    {
+     "text": "fica",
+     "start": 1.07,
+     "end": 1.31
+    },
+    {
+     "text": "a",
+     "start": 1.31,
+     "end": 1.39
+    },
+    {
+     "text": "nossa",
+     "start": 1.39,
+     "end": 1.63
+    },
+    {
+     "text": "loja",
+     "start": 1.63,
+     "end": 1.95
+    },
+    {
+     "text": "aqui",
+     "start": 1.95,
+     "end": 2.11
+    },
+    {
+     "text": "em",
+     "start": 2.11,
+     "end": 2.19
+    },
+    {
+     "text": "Paragominas?",
+     "start": 2.19,
+     "end": 3.23
+    },
+    {
+     "text": "Vem",
+     "start": 3.23,
+     "end": 3.47
+    },
+    {
+     "text": "que",
+     "start": 3.47,
+     "end": 3.63
+    },
+    {
+     "text": "eu",
+     "start": 3.63,
+     "end": 3.71
+    },
+    {
+     "text": "te",
+     "start": 3.71,
+     "end": 3.87
+    },
+    {
+     "text": "mostro!",
+     "start": 3.87,
+     "end": 4.26
+    }
+   ],
+   "captions": [
+    {
+     "text": "Sabe onde fica",
+     "start": 0.45,
+     "end": 1.31,
+     "words": [
+      {
+       "text": "Sabe",
+       "start": 0.45,
+       "end": 0.83
+      },
+      {
+       "text": "onde",
+       "start": 0.83,
+       "end": 1.07
+      },
+      {
+       "text": "fica",
+       "start": 1.07,
+       "end": 1.31
+      }
+     ]
+    },
+    {
+     "text": "a nossa loja",
+     "start": 1.31,
+     "end": 1.95,
+     "words": [
+      {
+       "text": "a",
+       "start": 1.31,
+       "end": 1.39
+      },
+      {
+       "text": "nossa",
+       "start": 1.39,
+       "end": 1.63
+      },
+      {
+       "text": "loja",
+       "start": 1.63,
+       "end": 1.95
+      }
+     ]
+    },
+    {
+     "text": "aqui em Paragominas?",
+     "start": 1.95,
+     "end": 3.23,
+     "words": [
+      {
+       "text": "aqui",
+       "start": 1.95,
+       "end": 2.11
+      },
+      {
+       "text": "em",
+       "start": 2.11,
+       "end": 2.19
+      },
+      {
+       "text": "Paragominas?",
+       "start": 2.19,
+       "end": 3.23
+      }
+     ]
+    },
+    {
+     "text": "Vem que eu",
+     "start": 3.23,
+     "end": 3.71,
+     "words": [
+      {
+       "text": "Vem",
+       "start": 3.23,
+       "end": 3.47
+      },
+      {
+       "text": "que",
+       "start": 3.47,
+       "end": 3.63
+      },
+      {
+       "text": "eu",
+       "start": 3.63,
+       "end": 3.71
+      }
+     ]
+    },
+    {
+     "text": "te mostro!",
+     "start": 3.71,
+     "end": 4.26,
+     "words": [
+      {
+       "text": "te",
+       "start": 3.71,
+       "end": 3.87
+      },
+      {
+       "text": "mostro!",
+       "start": 3.87,
+       "end": 4.26
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "centro",
+   "text": "Saindo do centro, da Praça Célio Miranda, siga até a rotatória da PA-125 e entre na Rua Equador, que vira a Avenida Vinícius de Moraes.",
+   "start": 6.0,
+   "end": 15.02,
+   "words": [
+    {
+     "text": "Saindo",
+     "start": 6.0,
+     "end": 6.3
+    },
+    {
+     "text": "do",
+     "start": 6.38,
+     "end": 6.54
+    },
+    {
+     "text": "centro,",
+     "start": 6.54,
+     "end": 6.86
+    },
+    {
+     "text": "da",
+     "start": 6.86,
+     "end": 7.02
+    },
+    {
+     "text": "Praça",
+     "start": 7.02,
+     "end": 7.42
+    },
+    {
+     "text": "Célio",
+     "start": 7.42,
+     "end": 7.82
+    },
+    {
+     "text": "Miranda,",
+     "start": 7.98,
+     "end": 8.62
+    },
+    {
+     "text": "siga",
+     "start": 8.62,
+     "end": 8.94
+    },
+    {
+     "text": "até",
+     "start": 8.94,
+     "end": 9.18
+    },
+    {
+     "text": "a",
+     "start": 9.18,
+     "end": 9.26
+    },
+    {
+     "text": "rotatória",
+     "start": 9.26,
+     "end": 9.82
+    },
+    {
+     "text": "da",
+     "start": 9.82,
+     "end": 9.98
+    },
+    {
+     "text": "PA-125",
+     "start": 9.98,
+     "end": 11.42
+    },
+    {
+     "text": "e",
+     "start": 11.42,
+     "end": 11.58
+    },
+    {
+     "text": "entre",
+     "start": 11.58,
+     "end": 11.74
+    },
+    {
+     "text": "na",
+     "start": 11.9,
+     "end": 11.98
+    },
+    {
+     "text": "Rua",
+     "start": 11.98,
+     "end": 12.3
+    },
+    {
+     "text": "Equador,",
+     "start": 12.3,
+     "end": 12.86
+    },
+    {
+     "text": "que",
+     "start": 12.86,
+     "end": 13.02
+    },
+    {
+     "text": "vira",
+     "start": 13.02,
+     "end": 13.26
+    },
+    {
+     "text": "a",
+     "start": 13.26,
+     "end": 13.34
+    },
+    {
+     "text": "Avenida",
+     "start": 13.34,
+     "end": 13.74
+    },
+    {
+     "text": "Vinícius",
+     "start": 13.74,
+     "end": 14.22
+    },
+    {
+     "text": "de",
+     "start": 14.3,
+     "end": 14.46
+    },
+    {
+     "text": "Moraes.",
+     "start": 14.46,
+     "end": 15.02
+    }
+   ],
+   "captions": [
+    {
+     "text": "Saindo do centro,",
+     "start": 6.0,
+     "end": 6.86,
+     "words": [
+      {
+       "text": "Saindo",
+       "start": 6.0,
+       "end": 6.3
+      },
+      {
+       "text": "do",
+       "start": 6.38,
+       "end": 6.54
+      },
+      {
+       "text": "centro,",
+       "start": 6.54,
+       "end": 6.86
+      }
+     ]
+    },
+    {
+     "text": "da Praça Célio",
+     "start": 6.86,
+     "end": 7.82,
+     "words": [
+      {
+       "text": "da",
+       "start": 6.86,
+       "end": 7.02
+      },
+      {
+       "text": "Praça",
+       "start": 7.02,
+       "end": 7.42
+      },
+      {
+       "text": "Célio",
+       "start": 7.42,
+       "end": 7.82
+      }
+     ]
+    },
+    {
+     "text": "Miranda,",
+     "start": 7.98,
+     "end": 8.62,
+     "words": [
+      {
+       "text": "Miranda,",
+       "start": 7.98,
+       "end": 8.62
+      }
+     ]
+    },
+    {
+     "text": "siga até a",
+     "start": 8.62,
+     "end": 9.26,
+     "words": [
+      {
+       "text": "siga",
+       "start": 8.62,
+       "end": 8.94
+      },
+      {
+       "text": "até",
+       "start": 8.94,
+       "end": 9.18
+      },
+      {
+       "text": "a",
+       "start": 9.18,
+       "end": 9.26
+      }
+     ]
+    },
+    {
+     "text": "rotatória da PA-125",
+     "start": 9.26,
+     "end": 11.42,
+     "words": [
+      {
+       "text": "rotatória",
+       "start": 9.26,
+       "end": 9.82
+      },
+      {
+       "text": "da",
+       "start": 9.82,
+       "end": 9.98
+      },
+      {
+       "text": "PA-125",
+       "start": 9.98,
+       "end": 11.42
+      }
+     ]
+    },
+    {
+     "text": "e entre na",
+     "start": 11.42,
+     "end": 11.98,
+     "words": [
+      {
+       "text": "e",
+       "start": 11.42,
+       "end": 11.58
+      },
+      {
+       "text": "entre",
+       "start": 11.58,
+       "end": 11.74
+      },
+      {
+       "text": "na",
+       "start": 11.9,
+       "end": 11.98
+      }
+     ]
+    },
+    {
+     "text": "Rua Equador,",
+     "start": 11.98,
+     "end": 12.86,
+     "words": [
+      {
+       "text": "Rua",
+       "start": 11.98,
+       "end": 12.3
+      },
+      {
+       "text": "Equador,",
+       "start": 12.3,
+       "end": 12.86
+      }
+     ]
+    },
+    {
+     "text": "que vira a",
+     "start": 12.86,
+     "end": 13.34,
+     "words": [
+      {
+       "text": "que",
+       "start": 12.86,
+       "end": 13.02
+      },
+      {
+       "text": "vira",
+       "start": 13.02,
+       "end": 13.26
+      },
+      {
+       "text": "a",
+       "start": 13.26,
+       "end": 13.34
+      }
+     ]
+    },
+    {
+     "text": "Avenida Vinícius de",
+     "start": 13.34,
+     "end": 14.46,
+     "words": [
+      {
+       "text": "Avenida",
+       "start": 13.34,
+       "end": 13.74
+      },
+      {
+       "text": "Vinícius",
+       "start": 13.74,
+       "end": 14.22
+      },
+      {
+       "text": "de",
+       "start": 14.3,
+       "end": 14.46
+      }
+     ]
+    },
+    {
+     "text": "Moraes.",
+     "start": 14.46,
+     "end": 15.02,
+     "words": [
+      {
+       "text": "Moraes.",
+       "start": 14.46,
+       "end": 15.02
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "reto",
+   "text": "Aí é só seguir reto!",
+   "start": 15.47,
+   "end": 16.61,
+   "words": [
+    {
+     "text": "Aí",
+     "start": 15.47,
+     "end": 15.53
+    },
+    {
+     "text": "é",
+     "start": 15.53,
+     "end": 15.69
+    },
+    {
+     "text": "só",
+     "start": 15.69,
+     "end": 15.85
+    },
+    {
+     "text": "seguir",
+     "start": 15.93,
+     "end": 16.25
+    },
+    {
+     "text": "reto!",
+     "start": 16.25,
+     "end": 16.61
+    }
+   ],
+   "captions": [
+    {
+     "text": "Aí é só",
+     "start": 15.47,
+     "end": 15.85,
+     "words": [
+      {
+       "text": "Aí",
+       "start": 15.47,
+       "end": 15.53
+      },
+      {
+       "text": "é",
+       "start": 15.53,
+       "end": 15.69
+      },
+      {
+       "text": "só",
+       "start": 15.69,
+       "end": 15.85
+      }
+     ]
+    },
+    {
+     "text": "seguir reto!",
+     "start": 15.93,
+     "end": 16.61,
+     "words": [
+      {
+       "text": "seguir",
+       "start": 15.93,
+       "end": 16.25
+      },
+      {
+       "text": "reto!",
+       "start": 16.25,
+       "end": 16.61
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "virada",
+   "text": "No final da avenida, vire à esquerda na Barão de Araruna.",
+   "start": 17.18,
+   "end": 20.15,
+   "words": [
+    {
+     "text": "No",
+     "start": 17.18,
+     "end": 17.23
+    },
+    {
+     "text": "final",
+     "start": 17.18,
+     "end": 17.48
+    },
+    {
+     "text": "da",
+     "start": 17.56,
+     "end": 17.72
+    },
+    {
+     "text": "avenida,",
+     "start": 17.72,
+     "end": 18.2
+    },
+    {
+     "text": "vire",
+     "start": 18.2,
+     "end": 18.6
+    },
+    {
+     "text": "à",
+     "start": 18.6,
+     "end": 18.68
+    },
+    {
+     "text": "esquerda",
+     "start": 18.68,
+     "end": 19.0
+    },
+    {
+     "text": "na",
+     "start": 19.0,
+     "end": 19.16
+    },
+    {
+     "text": "Barão",
+     "start": 19.16,
+     "end": 19.4
+    },
+    {
+     "text": "de",
+     "start": 19.4,
+     "end": 19.56
+    },
+    {
+     "text": "Araruna.",
+     "start": 19.56,
+     "end": 20.15
+    }
+   ],
+   "captions": [
+    {
+     "text": "No final da",
+     "start": 17.18,
+     "end": 17.72,
+     "words": [
+      {
+       "text": "No",
+       "start": 17.18,
+       "end": 17.23
+      },
+      {
+       "text": "final",
+       "start": 17.18,
+       "end": 17.48
+      },
+      {
+       "text": "da",
+       "start": 17.56,
+       "end": 17.72
+      }
+     ]
+    },
+    {
+     "text": "avenida,",
+     "start": 17.72,
+     "end": 18.2,
+     "words": [
+      {
+       "text": "avenida,",
+       "start": 17.72,
+       "end": 18.2
+      }
+     ]
+    },
+    {
+     "text": "vire à esquerda",
+     "start": 18.2,
+     "end": 19.0,
+     "words": [
+      {
+       "text": "vire",
+       "start": 18.2,
+       "end": 18.6
+      },
+      {
+       "text": "à",
+       "start": 18.6,
+       "end": 18.68
+      },
+      {
+       "text": "esquerda",
+       "start": 18.68,
+       "end": 19.0
+      }
+     ]
+    },
+    {
+     "text": "na Barão de",
+     "start": 19.0,
+     "end": 19.56,
+     "words": [
+      {
+       "text": "na",
+       "start": 19.0,
+       "end": 19.16
+      },
+      {
+       "text": "Barão",
+       "start": 19.16,
+       "end": 19.4
+      },
+      {
+       "text": "de",
+       "start": 19.4,
+       "end": 19.56
+      }
+     ]
+    },
+    {
+     "text": "Araruna.",
+     "start": 19.56,
+     "end": 20.15,
+     "words": [
+      {
+       "text": "Araruna.",
+       "start": 19.56,
+       "end": 20.15
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "chegou",
+   "text": "Passou o Hospital São Paulo? Chegou!",
+   "start": 21.52,
+   "end": 23.45,
+   "words": [
+    {
+     "text": "Passou",
+     "start": 21.52,
+     "end": 21.74
+    },
+    {
+     "text": "o",
+     "start": 21.74,
+     "end": 21.82
+    },
+    {
+     "text": "Hospital",
+     "start": 21.9,
+     "end": 22.38
+    },
+    {
+     "text": "São",
+     "start": 22.38,
+     "end": 22.54
+    },
+    {
+     "text": "Paulo?",
+     "start": 22.54,
+     "end": 23.02
+    },
+    {
+     "text": "Chegou!",
+     "start": 23.02,
+     "end": 23.45
+    }
+   ],
+   "captions": [
+    {
+     "text": "Passou o Hospital",
+     "start": 21.52,
+     "end": 22.38,
+     "words": [
+      {
+       "text": "Passou",
+       "start": 21.52,
+       "end": 21.74
+      },
+      {
+       "text": "o",
+       "start": 21.74,
+       "end": 21.82
+      },
+      {
+       "text": "Hospital",
+       "start": 21.9,
+       "end": 22.38
+      }
+     ]
+    },
+    {
+     "text": "São Paulo?",
+     "start": 22.38,
+     "end": 23.02,
+     "words": [
+      {
+       "text": "São",
+       "start": 22.38,
+       "end": 22.54
+      },
+      {
+       "text": "Paulo?",
+       "start": 22.54,
+       "end": 23.02
+      }
+     ]
+    },
+    {
+     "text": "Chegou!",
+     "start": 23.02,
+     "end": 23.45,
+     "words": [
+      {
+       "text": "Chegou!",
+       "start": 23.02,
+       "end": 23.45
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "endereco",
+   "text": "É o número 885, no Promissão: bem em frente à Júnior Bike, do ladinho da Vila Pet.",
+   "start": 24.3,
+   "end": 30.92,
+   "words": [
+    {
+     "text": "É",
+     "start": 24.3,
+     "end": 24.35
+    },
+    {
+     "text": "o",
+     "start": 24.3,
+     "end": 24.44
+    },
+    {
+     "text": "número",
+     "start": 24.44,
+     "end": 24.84
+    },
+    {
+     "text": "885,",
+     "start": 24.84,
+     "end": 26.52
+    },
+    {
+     "text": "no",
+     "start": 26.52,
+     "end": 26.68
+    },
+    {
+     "text": "Promissão:",
+     "start": 26.68,
+     "end": 27.56
+    },
+    {
+     "text": "bem",
+     "start": 27.56,
+     "end": 27.8
+    },
+    {
+     "text": "em",
+     "start": 27.8,
+     "end": 27.96
+    },
+    {
+     "text": "frente",
+     "start": 27.96,
+     "end": 28.2
+    },
+    {
+     "text": "à",
+     "start": 28.2,
+     "end": 28.36
+    },
+    {
+     "text": "Júnior",
+     "start": 28.36,
+     "end": 28.84
+    },
+    {
+     "text": "Bike,",
+     "start": 28.84,
+     "end": 29.32
+    },
+    {
+     "text": "do",
+     "start": 29.32,
+     "end": 29.48
+    },
+    {
+     "text": "ladinho",
+     "start": 29.48,
+     "end": 29.88
+    },
+    {
+     "text": "da",
+     "start": 29.88,
+     "end": 30.04
+    },
+    {
+     "text": "Vila",
+     "start": 30.04,
+     "end": 30.44
+    },
+    {
+     "text": "Pet.",
+     "start": 30.44,
+     "end": 30.92
+    }
+   ],
+   "captions": [
+    {
+     "text": "É o número",
+     "start": 24.3,
+     "end": 24.84,
+     "words": [
+      {
+       "text": "É",
+       "start": 24.3,
+       "end": 24.35
+      },
+      {
+       "text": "o",
+       "start": 24.3,
+       "end": 24.44
+      },
+      {
+       "text": "número",
+       "start": 24.44,
+       "end": 24.84
+      }
+     ]
+    },
+    {
+     "text": "885,",
+     "start": 24.84,
+     "end": 26.52,
+     "words": [
+      {
+       "text": "885,",
+       "start": 24.84,
+       "end": 26.52
+      }
+     ]
+    },
+    {
+     "text": "no Promissão:",
+     "start": 26.52,
+     "end": 27.56,
+     "words": [
+      {
+       "text": "no",
+       "start": 26.52,
+       "end": 26.68
+      },
+      {
+       "text": "Promissão:",
+       "start": 26.68,
+       "end": 27.56
+      }
+     ]
+    },
+    {
+     "text": "bem em frente",
+     "start": 27.56,
+     "end": 28.2,
+     "words": [
+      {
+       "text": "bem",
+       "start": 27.56,
+       "end": 27.8
+      },
+      {
+       "text": "em",
+       "start": 27.8,
+       "end": 27.96
+      },
+      {
+       "text": "frente",
+       "start": 27.96,
+       "end": 28.2
+      }
+     ]
+    },
+    {
+     "text": "à Júnior Bike,",
+     "start": 28.2,
+     "end": 29.32,
+     "words": [
+      {
+       "text": "à",
+       "start": 28.2,
+       "end": 28.36
+      },
+      {
+       "text": "Júnior",
+       "start": 28.36,
+       "end": 28.84
+      },
+      {
+       "text": "Bike,",
+       "start": 28.84,
+       "end": 29.32
+      }
+     ]
+    },
+    {
+     "text": "do ladinho da",
+     "start": 29.32,
+     "end": 30.04,
+     "words": [
+      {
+       "text": "do",
+       "start": 29.32,
+       "end": 29.48
+      },
+      {
+       "text": "ladinho",
+       "start": 29.48,
+       "end": 29.88
+      },
+      {
+       "text": "da",
+       "start": 29.88,
+       "end": 30.04
+      }
+     ]
+    },
+    {
+     "text": "Vila Pet.",
+     "start": 30.04,
+     "end": 30.92,
+     "words": [
+      {
+       "text": "Vila",
+       "start": 30.04,
+       "end": 30.44
+      },
+      {
+       "text": "Pet.",
+       "start": 30.44,
+       "end": 30.92
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "convite",
+   "text": "Vem fazer uma visita, a gente te espera!",
+   "start": 31.62,
+   "end": 33.43,
+   "words": [
+    {
+     "text": "Vem",
+     "start": 31.62,
+     "end": 31.76
+    },
+    {
+     "text": "fazer",
+     "start": 31.76,
+     "end": 32.0
+    },
+    {
+     "text": "uma",
+     "start": 32.0,
+     "end": 32.16
+    },
+    {
+     "text": "visita,",
+     "start": 32.16,
+     "end": 32.56
+    },
+    {
+     "text": "a",
+     "start": 32.56,
+     "end": 32.64
+    },
+    {
+     "text": "gente",
+     "start": 32.64,
+     "end": 32.88
+    },
+    {
+     "text": "te",
+     "start": 32.88,
+     "end": 33.04
+    },
+    {
+     "text": "espera!",
+     "start": 33.04,
+     "end": 33.43
+    }
+   ],
+   "captions": [
+    {
+     "text": "Vem fazer uma",
+     "start": 31.62,
+     "end": 32.16,
+     "words": [
+      {
+       "text": "Vem",
+       "start": 31.62,
+       "end": 31.76
+      },
+      {
+       "text": "fazer",
+       "start": 31.76,
+       "end": 32.0
+      },
+      {
+       "text": "uma",
+       "start": 32.0,
+       "end": 32.16
+      }
+     ]
+    },
+    {
+     "text": "visita,",
+     "start": 32.16,
+     "end": 32.56,
+     "words": [
+      {
+       "text": "visita,",
+       "start": 32.16,
+       "end": 32.56
+      }
+     ]
+    },
+    {
+     "text": "a gente te",
+     "start": 32.56,
+     "end": 33.04,
+     "words": [
+      {
+       "text": "a",
+       "start": 32.56,
+       "end": 32.64
+      },
+      {
+       "text": "gente",
+       "start": 32.64,
+       "end": 32.88
+      },
+      {
+       "text": "te",
+       "start": 32.88,
+       "end": 33.04
+      }
+     ]
+    },
+    {
+     "text": "espera!",
+     "start": 33.04,
+     "end": 33.43,
+     "words": [
+      {
+       "text": "espera!",
+       "start": 33.04,
+       "end": 33.43
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
