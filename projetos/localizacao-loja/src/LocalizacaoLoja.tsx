@@ -2,7 +2,8 @@ import React from "react";
 import {Video} from "@remotion/media";
 import {AbsoluteFill, staticFile, useVideoConfig} from "remotion";
 import {SCENE, lineById, wordTime} from "./overlay/data";
-import {Bike, Hospital, Pin} from "./overlay/Icons";
+import {Ball, Bike, Hospital, Paw, Pin} from "./overlay/Icons";
+import {T} from "./timeline";
 import {
   ArrivalBurst,
   Captions,
@@ -38,6 +39,19 @@ export const LocalizacaoLoja: React.FC = () => {
         accent={COLORS.route}
       />
       <MapLabel
+        anchor={SCENE.pois.arena}
+        start={wordTime("virada", "avenida") - 0.05}
+        end={T.turnAt + 0.2}
+        kicker="No fim da avenida"
+        title="Arena Verde"
+        icon={<Ball size={54} />}
+        accent="#1fa85b"
+        stem={150}
+        layout="side"
+        side="left"
+        rise={80}
+      />
+      <MapLabel
         anchor={SCENE.pois.hospital}
         start={HOSPITAL_LABEL.start}
         end={HOSPITAL_LABEL.end}
@@ -55,8 +69,23 @@ export const LocalizacaoLoja: React.FC = () => {
         title="Júnior Bike"
         icon={<Bike size={50} />}
         accent={COLORS.route}
-        stem={170}
+        stem={150}
         layout="side"
+        side="right"
+        rise={65}
+      />
+      <MapLabel
+        anchor={SCENE.pois.vilaPet}
+        start={wordTime("endereco", "ladinho") - 0.1}
+        end={lineById("convite").start - 0.2}
+        kicker="Do lado"
+        title="Vila Pet"
+        icon={<Paw size={46} />}
+        accent="#ff9f1c"
+        stem={120}
+        layout="side"
+        side="right"
+        rise={-60}
       />
       <NavBanner />
       <Captions />

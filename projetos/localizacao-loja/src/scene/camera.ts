@@ -31,6 +31,7 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const lerpLog = (a: number, b: number, t: number) => Math.exp(lerp(Math.log(a), Math.log(b), t));
 const angleDiff = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
 const lerpAngle = (a: number, b: number, t: number) => a + angleDiff(a, b) * t;
+const DEG = Math.PI / 180;
 
 const blend = (a: Rig, b: Rig, w: number): Rig => ({
   tx: lerp(a.tx, b.tx, w),
@@ -109,15 +110,19 @@ const followRig = (t: number, route: Route): Rig => {
   };
 };
 
+// alvo um pouco antes da loja (do lado da câmera): loja, Júnior Bike e Vila Pet sobem na tela, acima do cartão de endereço
+const STORE_TARGET_LEAD = 40;
+
 const storeRig = (t: number, pois: ScenePois, arrivalHeading: number): Rig => {
   const u = (t - T.arrive) / (T.pullBack - T.arrive);
   const v = (t - T.pullBack) / (T.end - T.pullBack);
   const orbit = 95 * easeInOutSine(u) + 30 * smooth(v);
+  const heading = arrivalHeading + orbit;
   return {
-    tx: pois.store[0],
-    tz: pois.store[1],
+    tx: pois.store[0] - Math.sin(heading * DEG) * STORE_TARGET_LEAD,
+    tz: pois.store[1] + Math.cos(heading * DEG) * STORE_TARGET_LEAD,
     dist: v > 0 ? lerpLog(250, 760, easeInOutSine(v)) : lerpLog(480, 250, easeInOutSine(u * 1.25)),
-    heading: arrivalHeading + orbit,
+    heading,
     pitch: v > 0 ? lerp(38, 54, easeInOutSine(v)) : lerp(48, 38, easeInOutSine(u * 1.25)),
     fov: FOV,
     roll: 0,
@@ -148,8 +153,6 @@ export const rigAt = (t: number, route: Route, pois: ScenePois): Rig => {
   rig.roll += 0.25 * Math.sin(t * 0.9 + 2.1);
   return rig;
 };
-
-const DEG = Math.PI / 180;
 
 export const cameraFromRig = (rig: Rig): CameraState => {
   const h = rig.heading * DEG;

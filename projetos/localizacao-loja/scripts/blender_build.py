@@ -344,13 +344,45 @@ def mat_ground(img_path, detail):
 
 def mat_grass(N):
     pos = N.new("ShaderNodeNewGeometry").outputs["Position"]
-    pitch = N.attr("seed").outputs["Fac"]
+    uv = N.separate(N.new("ShaderNodeUVMap", uv_map="UVMap").outputs["UV"])
+    u, v = uv[0], uv[1]
+    pitch = N.attr("seed").outputs["Fac"]          # 1 = campo de futebol (UV em metros alinhada ao campo)
+    L = N.attr("plen").outputs["Fac"]
+    W = N.attr("pwid").outputs["Fac"]
     n1 = N.noise(pos, 0.15, 3.0, 0.6)
     n2 = N.noise(pos, 2.0, 3.0, 0.6)
-    c = N.ramp(n1, [(0.0, srgb("#4a6526")), (0.45, srgb("#5d7a2f")), (0.75, srgb("#73843a")), (1.0, srgb("#93874c"))])
-    stripes = N.math("ADD", 0.92, N.math("MULTIPLY", N.math("GREATER_THAN", N.math("FRACT", N.math("DIVIDE", N.separate(pos)[0], 8.0)), 0.5), 0.12))
-    c = N.scale_color(c, N.mix(pitch, 1.0, stripes, kind="FLOAT"))
-    c = N.scale_color(c, N.math("ADD", 0.85, N.math("MULTIPLY", n2, 0.28)))
+    park = N.ramp(n1, [(0.0, srgb("#4a6526")), (0.45, srgb("#5d7a2f")), (0.75, srgb("#73843a")), (1.0, srgb("#93874c"))])
+    park = N.scale_color(park, N.math("ADD", 0.85, N.math("MULTIPLY", n2, 0.28)))
+    # campo: verde cuidado, com faixas de corte ao longo do comprimento e desgaste leve
+    band = N.math("GREATER_THAN", N.math("FRACT", N.math("DIVIDE", u, N.math("DIVIDE", L, 14.0))), 0.5)
+    field = N.scale_color(srgb("#4b7a2a"), N.math("ADD", 0.9, N.math("MULTIPLY", band, 0.16)))
+    field = N.scale_color(field, N.math("ADD", 0.88, N.math("MULTIPLY", n1, 0.22)))
+    # marcações (linhas de 30 cm; áreas e círculo proporcionais ao tamanho do campo)
+    hw = 0.15
+    k = N.math("MINIMUM", 1.0, N.math("DIVIDE", L, 105.0))
+    um = N.math("MINIMUM", u, N.math("SUBTRACT", L, u))
+    vc = N.math("ABSOLUTE", N.math("SUBTRACT", v, N.math("MULTIPLY", W, 0.5)))
+    border = N.math("LESS_THAN", N.math("MINIMUM", um, N.math("MINIMUM", v, N.math("SUBTRACT", W, v))), 2 * hw)
+    half = N.math("LESS_THAN", N.math("ABSOLUTE", N.math("SUBTRACT", u, N.math("MULTIPLY", L, 0.5))), hw)
+    rc = N.vmath("LENGTH", N.combine(N.math("SUBTRACT", u, N.math("MULTIPLY", L, 0.5)), N.math("SUBTRACT", v, N.math("MULTIPLY", W, 0.5)), 0.0))
+    circle = N.math("LESS_THAN", N.math("ABSOLUTE", N.math("SUBTRACT", rc, N.math("MULTIPLY", k, 9.15))), hw)
+
+    def box(depth, half_width):
+        d = N.math("MULTIPLY", k, depth)
+        w = N.math("MULTIPLY", k, half_width)
+        front = N.math("MULTIPLY", N.math("LESS_THAN", N.math("ABSOLUTE", N.math("SUBTRACT", um, d)), hw), N.math("LESS_THAN", vc, N.math("ADD", w, hw)))
+        side = N.math("MULTIPLY", N.math("LESS_THAN", N.math("ABSOLUTE", N.math("SUBTRACT", vc, w)), hw), N.math("LESS_THAN", um, d))
+        return N.math("MAXIMUM", front, side)
+    lines = N.math("MAXIMUM", N.math("MAXIMUM", border, half), N.math("MAXIMUM", circle, N.math("MAXIMUM", box(16.5, 20.16), box(5.5, 9.16))))
+    c = N.mix(pitch, park, field)
+    c = N.mix(N.math("MULTIPLY", lines, pitch), c, srgb("#e6eae2"))
+    return N.principled(c, 0.92, 0.0)
+
+
+def mat_track(N):
+    pos = N.new("ShaderNodeNewGeometry").outputs["Position"]
+    n1 = N.noise(pos, 0.3, 3.0, 0.6)
+    c = N.ramp(n1, [(0.0, srgb("#a8917a")), (0.5, srgb("#b9a48c")), (1.0, srgb("#c4b39d"))])
     return N.principled(c, 0.95, 0.0)
 
 
@@ -822,6 +854,7 @@ def build():
     mesh_from_npz("faixas", "marks", material("faixa", mat_marks))
     mesh_from_npz("agua", "water", material("agua", mat_water))
     mesh_from_npz("grama", "grass", material("grama", mat_grass))
+    mesh_from_npz("pista", "track", material("pista", mat_track))
     plane("chao_regiao", 49152, -0.4, material("chao_regiao", mat_ground(SCENE_DIR / "sat_region.jpg", False)))
     plane("chao_cidade", 12288, -0.15, material("chao_cidade", mat_ground(SCENE_DIR / "sat_city.jpg", True)))
 

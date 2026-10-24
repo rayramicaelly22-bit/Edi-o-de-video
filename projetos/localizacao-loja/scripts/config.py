@@ -24,14 +24,21 @@ ORIGIN_E, ORIGIN_N = to_utm(*ORIGIN_LL)
 
 # Pontos de interesse (lon, lat)
 PRACA_CELIO_MIRANDA = (-47.354900, -2.995580)   # Overture places: "Praça Celio Miranda"
-HOSPITAL_SAO_PAULO = (-47.347148, -2.983429)    # Overture places: "Hospital São Paulo", nº 737
+# Hospital São Paulo (nº 737): prédio do lado nordeste, de frente para a R. Caravelas (Google Maps, conferido pela
+# dona da loja). O ponto do Overture places ficava ~300 m antes e do outro lado da avenida.
+HOSPITAL_SAO_PAULO = (-47.348602, -2.980975)
 LAGO_VERDE = (-47.346493, -2.998372)            # Overture places: "Lago Verde"
 
-# A Av. Barão de Araruna tem numeração métrica (nº ≈ metros desde o início, a sudeste),
-# com ímpares no lado sudoeste. O nº 885 fica a ~925 m do início da avenida.
+# Posição do nº 885 ao longo da avenida (metros desde a ponta sudeste do traçado do Overture): média dos dois pontos
+# do nº 885 no cadastro de endereços do Pará (Overture addresses, fonte br/pa/statewide). A numeração não é métrica
+# a partir dessa ponta (o nº 737, do hospital, fica a ~1090 m).
 STORE_NUMBER = 885
-STORE_ALONG_M = 925.0
-STORE_SIDE_OFFSET_M = 14.0  # recuo da pin para o lado sudoeste (lado dos ímpares)
+STORE_ALONG_M = 1222.5
+# Lado da loja, pela dona: o mesmo da Arena do Município Verde e do Hospital São Paulo (nordeste, à direita de quem
+# vem da Vinícius de Moraes); a Júnior Bike fica em frente, no lado do posto da esquina. Positivo = sudoeste.
+STORE_SIDE_OFFSET_M = -14.0
+VILA_PET_ALONG_M = STORE_ALONG_M - 12.0   # à direita de quem olha a loja da avenida (sentido dos números menores)
+ARENA_NAME = "Arena do Município Verde"   # nome no Overture (land_use); no vídeo, "Arena Verde"
 
 # Cenas Sentinel-2 L2A (Earth Search / Element 84) sem nuvem sobre a cidade, em ordem de prioridade
 S2_BASE = "https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/23/M/KS"

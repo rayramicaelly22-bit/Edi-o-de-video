@@ -44,6 +44,14 @@ export const Bike: React.FC<P> = ({size = 64, color = "#fff"}) => (
   </svg>
 );
 
+export const Ball: React.FC<P> = ({size = 64, color = "#fff"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9.6" strokeWidth="2.2" />
+    <path d="M12 8.4 L15.4 10.9 L14.1 14.9 H9.9 L8.6 10.9 Z" fill={color} />
+    <path d="M12 8.4 V2.6 M15.4 10.9 L21 9.1 M14.1 14.9 L17.6 19.6 M9.9 14.9 L6.4 19.6 M8.6 10.9 L3 9.1" />
+  </svg>
+);
+
 export const Paw: React.FC<P> = ({size = 64, color = "#fff"}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
     <ellipse cx="12" cy="16.3" rx="5.2" ry="4.4" />

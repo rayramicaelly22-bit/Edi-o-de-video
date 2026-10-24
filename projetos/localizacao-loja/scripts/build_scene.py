@@ -16,8 +16,8 @@ import shapely.ops
 from PIL import Image
 from shapely import STRtree, from_wkb
 
-from config import (CACHE, HOSPITAL_SAO_PAULO, LAGO_VERDE, ORIGIN_E, ORIGIN_LL, ORIGIN_N,
-                    PRACA_CELIO_MIRANDA, PUBLIC, STORE_ALONG_M, STORE_NUMBER, STORE_SIDE_OFFSET_M,
+from config import (ARENA_NAME, CACHE, HOSPITAL_SAO_PAULO, LAGO_VERDE, ORIGIN_E, ORIGIN_LL, ORIGIN_N,
+                    PRACA_CELIO_MIRANDA, PUBLIC, STORE_ALONG_M, STORE_NUMBER, STORE_SIDE_OFFSET_M, VILA_PET_ALONG_M,
                     to_utm)
 
 OV = CACHE / "overture"
@@ -356,19 +356,33 @@ def build_route_and_pois():
         av = max(av.geoms, key=lambda a: a.length)
     if av.coords[0][1] > av.coords[-1][1]:  # orienta do sudeste (nº baixos) para o noroeste
         av = shapely.LineString(list(av.coords)[::-1])
-    p = av.interpolate(STORE_ALONG_M); q = av.interpolate(STORE_ALONG_M + 1)
-    tx, ty = q.x - p.x, q.y - p.y; L = math.hypot(tx, ty); tx, ty = tx / L, ty / L
-    left = (-ty, tx)  # à esquerda de quem anda para o noroeste = lado sudoeste (ímpares)
+    def frame_at(along):
+        a = av.interpolate(along); b = av.interpolate(along + 1)
+        dx, dy = b.x - a.x, b.y - a.y; n = math.hypot(dx, dy)
+        return a, (dx / n, dy / n), (-dy / n, dx / n)   # ponto, direção (para noroeste), esquerda (sudoeste)
+
+    p, (tx, ty), left = frame_at(STORE_ALONG_M)
     store = (p.x + left[0] * STORE_SIDE_OFFSET_M, p.y + left[1] * STORE_SIDE_OFFSET_M)
     junior = (p.x - left[0] * STORE_SIDE_OFFSET_M, p.y - left[1] * STORE_SIDE_OFFSET_M)
     store_on_road = (p.x, p.y)
+    vp, _, vleft = frame_at(VILA_PET_ALONG_M)
+    vila_pet = (vp.x + vleft[0] * STORE_SIDE_OFFSET_M, vp.y + vleft[1] * STORE_SIDE_OFFSET_M)
+    arena = next(to_local(from_wkb(r["geometry"])) for r in pq.read_table(OV / "land_use.parquet").to_pylist()
+                 if ((r["names"] or {}).get("primary") or "") == ARENA_NAME)
+    # etiqueta da Arena: entre a borda do estádio voltada para o fim da Vinícius de Moraes e o centro do campo
+    # (o centro sozinho fica alto demais na tela durante a aproximação)
+    junction = line.interpolate(steps[-1]["from"])
+    edge = shapely.ops.nearest_points(arena.exterior, junction)[0]
+    arena_label = ((edge.x + arena.centroid.x) / 2, (edge.y + arena.centroid.y) / 2)
     pois = {
         "store": [round(store[0], 2), round(-store[1], 2)],
         "storeOnAvenue": [round(store_on_road[0], 2), round(-store_on_road[1], 2)],
         "juniorBike": [round(junior[0], 2), round(-junior[1], 2)],
+        "vilaPet": [round(vila_pet[0], 2), round(-vila_pet[1], 2)],
         "avenueHeading": [round(tx, 4), round(-ty, 4)],
         "praca": ll_local(*PRACA_CELIO_MIRANDA),
         "hospital": ll_local(*HOSPITAL_SAO_PAULO),
+        "arena": [round(arena_label[0], 2), round(-arena_label[1], 2)],
         "lagoVerde": ll_local(*LAGO_VERDE),
     }
     route = {"points": [[round(x, 2), round(-y, 2)] for x, y in pts], "along": [round(a, 2) for a in along],

@@ -109,9 +109,12 @@ type MapLabelProps = {
   // "up": cartão acima do ponto, com haste vertical; "side": cartão ao lado, com linha-guia diagonal
   // (para pontos que, vistos pela câmera, ficam colados em outro elemento)
   layout?: "up" | "side";
+  // no layout "side": lado do cartão (padrão: o lado com mais espaço no início) e deslocamento vertical em px
+  side?: "left" | "right";
+  rise?: number;
 };
 
-export const MapLabel: React.FC<MapLabelProps> = ({anchor, height = 0, start, end, kicker, title, icon, accent = COLORS.route, stem = 120, layout = "up"}) => {
+export const MapLabel: React.FC<MapLabelProps> = ({anchor, height = 0, start, end, kicker, title, icon, accent = COLORS.route, stem = 120, layout = "up", side, rise}) => {
   const {t, fps, width, height: H} = useTime();
   if (t < start - 0.05 || t > end + 0.05) return null;
   const p = projectAt(t, SCENE, [anchor[0], height, anchor[1]], width, H);
@@ -123,10 +126,10 @@ export const MapLabel: React.FC<MapLabelProps> = ({anchor, height = 0, start, en
   let cardPos: React.CSSProperties;
   if (layout === "side") {
     // o lado é decidido no início e mantido: com a órbita o ponto cruza a tela, e o cartão não pode pular
-    const right = projectAt(start, SCENE, [anchor[0], height, anchor[1]], width, H).x < width / 2;
-    const cardW = 30 + 76 + 18 + title.length * 25 + 30; // largura aproximada do cartão, para não sair da tela
+    const right = side ? side === "right" : projectAt(start, SCENE, [anchor[0], height, anchor[1]], width, H).x < width / 2;
+    const cardW = 30 + 76 + 18 + Math.max(title.length * 25, kicker.length * 19) + 30; // largura aproximada do cartão, para não sair da tela
     const ax = p.x + (right ? stem : -stem);
-    attach = {x: right ? Math.min(ax, width - 30 - cardW) : Math.max(ax, 30 + cardW), y: p.y + stem * 0.55};
+    attach = {x: right ? Math.min(ax, width - 30 - cardW) : Math.max(ax, 30 + cardW), y: p.y + (rise ?? stem * 0.55)};
     cardPos = {left: attach.x, top: attach.y, translate: right ? "0% -50%" : "-100% -50%", transformOrigin: right ? "0% 50%" : "100% 50%"};
   } else {
     attach = {x: p.x, y: p.y - stem};
@@ -333,7 +336,7 @@ export const ArrivalBurst: React.FC = () => {
   const s = pop(t, start, fps, 9, 190);
   const o = fadeOut(t, end, 0.3);
   const cx = Math.min(width - 280, Math.max(280, top.x));
-  const cy = Math.max(620, top.y - 120);
+  const cy = Math.max(520, top.y - 150);
   const k = interpolate(t, [start, start + 1.1], [0, 1], {...clamp, easing: Easing.out(Easing.quad)});
   return (
     <div style={{position: "absolute", inset: 0, opacity: o, fontFamily: FONT}}>
@@ -532,4 +535,5 @@ export const Shades: React.FC = () => {
 
 // Pontos de referência ao longo do caminho
 export const PRACA_LABEL = {start: T.descentEnd + 0.25, end: T.routeStart + 0.9};
-export const HOSPITAL_LABEL = {start: timeAtDistance(SCENE.route, 1690), end: T.arrive - 0.2};
+// o hospital aparece quando já está abaixo do banner de navegação (~150 m antes de a rota passar por ele)
+export const HOSPITAL_LABEL = {start: timeAtDistance(SCENE.route, 1930), end: T.arrive - 0.2};

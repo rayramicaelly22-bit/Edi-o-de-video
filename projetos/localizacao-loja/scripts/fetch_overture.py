@@ -1,7 +1,8 @@
-"""Baixa do S3 público do Overture Maps o recorte de Paragominas (ruas, prédios, água, uso do solo, pontos).
+"""Baixa do S3 público do Overture Maps o recorte de Paragominas (ruas, prédios, água, uso do solo, pontos, endereços).
 
 Saída: .cache/overture/<tipo>.parquet. Usa pyarrow com filtro pelo bbox (só lê os row groups que cruzam o recorte).
-Dados: © colaboradores do OpenStreetMap (ODbL), Overture Maps Foundation, Google Open Buildings, Meta/Foursquare (places).
+Dados: © colaboradores do OpenStreetMap (ODbL), Overture Maps Foundation, Google Open Buildings, Meta/Foursquare (places),
+cadastro de endereços do Pará (addresses).
 """
 import time
 
@@ -20,6 +21,7 @@ LAYERS = [
     ("buildings", "building", "buildings", CITY_BBOX),
     ("base", "water", "water", WIDE_BBOX),
     ("base", "land_use", "land_use", CITY_BBOX),
+    ("addresses", "address", "addresses", CITY_BBOX),
 ]
 
 

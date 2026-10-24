@@ -13,7 +13,7 @@ import shapely
 import shapely.ops
 from shapely import STRtree, from_wkb
 
-from config import CACHE, ORIGIN_E, ORIGIN_N, PUBLIC, to_utm
+from config import ARENA_NAME, CACHE, ORIGIN_E, ORIGIN_N, PUBLIC, to_utm
 
 OV = CACHE / "overture"
 DETAIL_HALF = 3072.0     # área com prédios, ruas e árvores
@@ -94,9 +94,20 @@ def add_walls(buf, ring2d, z0, z1, attrs, outward=True):
         u += L
 
 
-def add_flat(buf, poly, z, attrs, uv_scale=1.0):
+def add_flat(buf, poly, z, attrs, uv_scale=1.0, uv_fn=None):
     for t in triangulate(poly):
-        buf.add([(p[0], p[1], z) for p in t], [(p[0] * uv_scale, p[1] * uv_scale) for p in t], **attrs)
+        uv = [uv_fn(p) for p in t] if uv_fn else [(p[0] * uv_scale, p[1] * uv_scale) for p in t]
+        buf.add([(p[0], p[1], z) for p in t], uv, **attrs)
+
+
+def rect_frame(poly):
+    """Retângulo mínimo do polígono: origem, eixo comprido, eixo curto, comprimento e largura."""
+    c = np.asarray(poly.minimum_rotated_rectangle.exterior.coords)[:4]
+    if np.hypot(*(c[2] - c[1])) > np.hypot(*(c[1] - c[0])):
+        c = np.roll(c, -1, axis=0)
+    L = float(np.hypot(*(c[1] - c[0])))
+    W = float(np.hypot(*(c[3] - c[0])))
+    return c, (c[1] - c[0]) / L, (c[3] - c[0]) / W, L, W
 
 
 def roof_face(buf, pts3, eave_dir, attrs):
@@ -171,7 +182,7 @@ def building_params(bid, poly, area, sat):
     return h, mat, wall
 
 
-def build_buildings(route_line):
+def build_buildings(route_line, stadium=None):
     sat = Satellite()
     walls = MeshBuf(("r", "g", "b", "seed", "floors"))
     roofs = MeshBuf(("kind", "tone", "seed"))
@@ -189,6 +200,10 @@ def build_buildings(route_line):
                 continue
             bid = r["id"]
             area = poly.area
+            if stadium and is_grandstand(poly, stadium[0]):
+                grandstand(walls, poly, np.asarray(stadium[1].centroid.coords[0]), rand01(bid, "s"))
+                polys.append(poly)
+                continue
             h, mat, wall = building_params(bid, poly, area, sat)
             floors = 2 if h > 5.5 else 1
             seed = rand01(bid, "s")
@@ -227,6 +242,82 @@ def build_buildings(route_line):
                     props["tanks"].append([pt.x, pt.y, h, rand01(bid, "tc"), rand01(bid, "ta") * 6.28])
     print(f"  prédios: {len(polys)}, caixas d'água: {len(props['tanks'])}")
     return walls, roofs, gables, props, polys
+
+
+# ------------------------------------------------------------------ estádio (Arena do Município Verde)
+def load_stadium():
+    """Polígono da Arena e o do campo de futebol dentro dela (ou None se não estiverem no Overture)."""
+    arena = pitch = None
+    uses = [(r, to_local(from_wkb(r["geometry"]))) for r in pq.read_table(OV / "land_use.parquet").to_pylist()]
+    for r, g in uses:
+        if ((r["names"] or {}).get("primary") or "") == ARENA_NAME:
+            arena = g
+    if arena is None:
+        return None
+    for r, g in uses:
+        if r["class"] == "pitch" and g.area > 4000 and g.intersection(arena).area > 0.9 * g.area:
+            pitch = g
+    return (arena, pitch) if pitch is not None else None
+
+
+def is_grandstand(poly, arena):
+    if not poly.intersects(arena) or poly.intersection(arena).area < 0.9 * poly.area:
+        return False
+    _, _, _, L, W = rect_frame(poly)
+    return L >= 35 and L / max(W, 1e-3) >= 2.2
+
+
+def grandstand(buf, poly, pitch_center, seed):
+    """Arquibancada de concreto: degraus subindo para longe do campo, guarda-corpo, muro de fundo e laterais."""
+    c, _, _, _, _ = rect_frame(poly)
+    if np.hypot(*((c[2] + c[3]) / 2 - pitch_center)) < np.hypot(*((c[0] + c[1]) / 2 - pitch_center)):
+        c = np.roll(c, 2, axis=0)            # c0-c1 vira a frente (lado voltado para o campo)
+    a = c[0]
+    L = float(np.hypot(*(c[1] - c[0])))
+    ax = (c[1] - c[0]) / L
+    D = float(np.hypot(*(c[3] - c[0])))
+    n = (c[3] - c[0]) / D                    # para trás, longe do campo
+    rows = max(5, int(D / 0.9))
+    d = D / rows
+    h0, step = 1.1, 0.45
+    col = dict(r=0.66, g=0.65, b=0.62, seed=seed, floors=0)
+
+    def P(s_, t_, z):
+        p = a + ax * s_ + n * t_
+        return (p[0], p[1], z)
+    z_prev = 0.0
+    prof = [(0.0, 0.0)]
+    for i in range(rows):
+        z = h0 + i * step
+        t0, t1 = i * d, (i + 1) * d
+        buf.add([P(0, t0, z_prev), P(L, t0, z_prev), P(L, t0, z), P(0, t0, z)], [(0, z_prev), (L, z_prev), (L, z), (0, z)], **col)
+        buf.add([P(0, t0, z), P(L, t0, z), P(L, t1, z), P(0, t1, z)], [(0, z), (L, z), (L, z + d), (0, z + d)], **col)
+        prof += [(t0, z), (t1, z)]
+        z_prev = z
+    top = z_prev + 1.1
+    for face in ([P(0, D - 0.2, z_prev), P(L, D - 0.2, z_prev), P(L, D - 0.2, top), P(0, D - 0.2, top)],   # guarda-corpo (dentro)
+                 [P(0, D - 0.2, top), P(L, D - 0.2, top), P(L, D, top), P(0, D, top)],                    # topo do guarda-corpo
+                 [P(L, D, 0), P(0, D, 0), P(0, D, top), P(L, D, top)]):                                   # muro de fundo
+        buf.add(face, [(0, 0), (L, 0), (L, top), (0, top)], **col)
+    prof += [(D, top), (D, 0.0)]
+    for s_ in (0.0, L):
+        side = [P(s_, t_, z) for t_, z in prof]
+        buf.add(side if s_ else side[::-1], [(t_, z) for t_, z in prof] if s_ else [(t_, z) for t_, z in prof][::-1], **col)
+
+
+def build_stadium(stadium, building_polys):
+    """Pista em volta do campo (o anel claro que aparece no satélite)."""
+    track = MeshBuf(("seed",))
+    if not stadium:
+        return track, shapely.GeometryCollection()
+    arena, pitch = stadium
+    rect = pitch.minimum_rotated_rectangle
+    ring = rect.buffer(10.0, quad_segs=12).difference(rect.buffer(3.5, quad_segs=12)).intersection(arena)
+    ring = ring.difference(shapely.union_all([b.buffer(0.3) for b in building_polys if b.intersects(arena)]))
+    for p in getattr(ring, "geoms", [ring]):
+        if p.geom_type == "Polygon" and p.area > 2:
+            add_flat(track, p, 0.03, dict(seed=0.0))
+    return track, rect.buffer(10.0)
 
 
 def pitched_roof(roofs, gables, c, h, kind, rattrs, wattrs):
@@ -365,6 +456,9 @@ def road_meshes():
 
 
 # ------------------------------------------------------------------ lotes e muros
+NO_LOT_USES = {"stadium", "pitch", "park", "playground", "garden", "school", "university", "college", "hospital", "cemetery"}
+
+
 def build_walls(building_polys, paved, unpaved, route_line):
     """Muros de lote: frente da quadra (com portões), divisas perpendiculares à rua e muro de fundo (perto do trajeto)."""
     rng = np.random.default_rng(11)
@@ -373,6 +467,9 @@ def build_walls(building_polys, paved, unpaved, route_line):
     blocks = area.difference(roads)
     tree = STRtree(building_polys)
     muros = MeshBuf(("r", "g", "b", "seed", "floors"))
+    # estádio, escolas, praças etc. não são loteados: lá dentro só fica o muro da frente
+    no_lots = shapely.union_all([to_local(from_wkb(r["geometry"])) for r in pq.read_table(OV / "land_use.parquet").to_pylist()
+                                 if r["class"] in NO_LOT_USES]).buffer(1.0)
     n_seg = 0
 
     def emit(line, hgt, col, gates):
@@ -447,13 +544,13 @@ def build_walls(building_polys, paved, unpaved, route_line):
                 if depth < 4:
                     continue
                 q = o + nrm * depth
-                side = shapely.LineString([o, q]).difference(obstacles)
+                side = shapely.LineString([o, q]).difference(obstacles).difference(no_lots)
                 emit(side, 1.9 + rng.uniform(-0.3, 0.3), wall_color(False), False)
                 back.append(q)
             # muro de fundo ligando o fim das divisas
             for p, q in zip(back[:-1], back[1:]):
                 if np.hypot(*(q - p)) < 25:
-                    emit(shapely.LineString([p, q]).difference(obstacles), 1.8 + rng.uniform(-0.2, 0.3), wall_color(False), False)
+                    emit(shapely.LineString([p, q]).difference(obstacles).difference(no_lots), 1.8 + rng.uniform(-0.2, 0.3), wall_color(False), False)
         # frente da quadra
         emit(blk.exterior.difference(obstacles), 2.1 + rng.uniform(-0.25, 0.3), wall_color(True), True)
     print(f"  muros: {n_seg} trechos")
@@ -541,7 +638,7 @@ def tree_kind(rng, dense, street=False):
     return kind, s
 
 
-def build_trees(building_polys, paved, unpaved, walk, water, route_line, center_all, green):
+def build_trees(building_polys, paved, unpaved, walk, water, route_line, center_all, green, keep_clear):
     d = np.load(CACHE / "ndvi_detail.npz")
     ndvi = d["ndvi"].astype(np.float32)
     x0, y0, x1, y1 = d["bounds"]
@@ -601,7 +698,8 @@ def build_trees(building_polys, paved, unpaved, walk, water, route_line, center_
     pts = shapely.points(cand[:, 0], cand[:, 1])
     keep = np.ones(len(cand), bool)
     keep[STRtree([b.buffer(1.2) for b in building_polys]).query(pts, predicate="intersects")[0]] = False
-    no_go = shapely.union_all([paved.buffer(0.6), unpaved.buffer(0.6), walk.buffer(1.2), water])
+    pitches = [p.buffer(2.0) for p, cls in green if cls == "pitch"]
+    no_go = shapely.union_all([paved.buffer(0.6), unpaved.buffer(0.6), walk.buffer(1.2), water, keep_clear] + pitches)
     shapely.prepare(no_go)
     keep &= ~shapely.contains_xy(no_go, cand[:, 0], cand[:, 1])
     cand = cand[keep]
@@ -616,13 +714,21 @@ def build_trees(building_polys, paved, unpaved, walk, water, route_line, center_
 
 
 def build_grass(green, building_polys):
-    buf = MeshBuf(("seed",))
+    """Grama de praças e campos. Nos campos, UV em metros alinhada ao retângulo (u no comprimento, v na largura)."""
+    buf = MeshBuf(("seed", "plen", "pwid"))
     blockers = shapely.union_all(building_polys)
     for poly, cls in green:
         p = poly.difference(blockers)
+        if cls == "pitch":
+            c, ax, ay, L, W = rect_frame(poly)
+            attrs = dict(seed=1.0, plen=L, pwid=W)
+            uv_fn = (lambda o, ex, ey: lambda q: (float((q[0] - o[0]) * ex[0] + (q[1] - o[1]) * ex[1]),
+                                                   float((q[0] - o[0]) * ey[0] + (q[1] - o[1]) * ey[1])))(c[0], ax, ay)
+        else:
+            attrs, uv_fn = dict(seed=0.0, plen=0.0, pwid=0.0), None
         for q in getattr(p, "geoms", [p]):
             if q.geom_type == "Polygon" and q.area > 4:
-                add_flat(buf, q, 0.02, dict(seed=1.0 if cls == "pitch" else 0.0))
+                add_flat(buf, q, 0.02, attrs, uv_fn=uv_fn)
     return buf
 
 
@@ -655,7 +761,9 @@ def main():
     print("ruas…")
     roads, paved, unpaved, walk, center_all = road_meshes()
     print("prédios…")
-    walls, roofs, gables, props, bpolys = build_buildings(route_line)
+    stadium = load_stadium()
+    walls, roofs, gables, props, bpolys = build_buildings(route_line, stadium)
+    track, track_area = build_stadium(stadium, bpolys)
     print("água…")
     water, water_u = build_water()
     print("muros…")
@@ -664,11 +772,11 @@ def main():
     cars = build_cars(center_all, route_line, bpolys)
     print("árvores…")
     green = load_green_areas()
-    trees = build_trees(bpolys, paved, unpaved, walk, water_u, route_line, center_all, green)
+    trees = build_trees(bpolys, paved, unpaved, walk, water_u, route_line, center_all, green, track_area)
     grass = build_grass(green, bpolys)
     out = {}
     for name, buf in [("walls", walls), ("roofs", roofs), ("gables", gables), ("panels", props["panels"]), ("water", water),
-                      ("muros", muros), ("grass", grass)] + [(k, v) for k, v in roads.items()]:
+                      ("muros", muros), ("grass", grass), ("track", track)] + [(k, v) for k, v in roads.items()]:
         arrs = buf.arrays()
         if arrs is None:
             continue

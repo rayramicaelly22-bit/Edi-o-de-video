@@ -9,13 +9,13 @@ trilha e efeitos.
 
 | Etapa | Script | O que faz |
 | --- | --- | --- |
-| 1 | `scripts/fetch_overture.py` | Baixa ruas, prédios, água e pontos comerciais de Paragominas do Overture Maps (S3 público). |
+| 1 | `scripts/fetch_overture.py` | Baixa ruas, prédios, água, uso do solo, pontos comerciais e endereços de Paragominas do Overture Maps (S3 público). |
 | 2 | `scripts/route.py` | Rota de carro (respeita mão única, prefere avenidas) da praça até a loja. |
 | 3 | `scripts/fetch_satellite.py` | Imagens Sentinel-2 sem nuvem (ago–out/2026) em duas escalas + NDVI para as árvores. |
 | 4 | `scripts/build_scene.py` | Geometria 3D: ruas com calçada e faixa, 28 mil prédios (telhado de quatro águas com cor tirada do satélite), água e ~29 mil árvores onde o satélite vê vegetação. |
 | 5 | `scripts/narration.py` | Narração com o Supertonic 3 (local), encaixada nos momentos do voo; tempos de cada palavra para as legendas. |
 | 6 | `scripts/audio.py` | Trilha sintetizada (Mi maior, 124,7 BPM, compassos alinhados com início da rota, virada e chegada), efeitos e mixagem com ducking. |
-| 7 | `scripts/city_geometry.py` | Cidade detalhada para o render realista: telhados de quatro e duas águas com beiral (cerâmica, fibrocimento, metal ou laje), oitões, caixas d'água, placas solares, calçada elevada com meio-fio, faixas, muros de lote com portões, grama das praças, carros estacionados e ~80 mil árvores (NDVI, quintais, calçadas e praças). |
+| 7 | `scripts/city_geometry.py` | Cidade detalhada para o render realista: telhados de quatro e duas águas com beiral (cerâmica, fibrocimento, metal ou laje), oitões, caixas d'água, placas solares, calçada elevada com meio-fio, faixas, muros de lote com portões, grama das praças, carros estacionados, ~80 mil árvores (NDVI, quintais, calçadas e praças) e a Arena Verde (campo com marcação, pista e arquibancadas). |
 | 8 | `npx tsx scripts/export_frames.ts` | Exporta a câmera e as animações de cada frame (`public/scene/frames.json`), as mesmas da Remotion. |
 | 9 | `scripts/blender_build.py` | Monta a cena no Blender: materiais procedurais, céu físico, sol, névoa atmosférica e animações (`.cache/cidade.blend`). |
 | 10 | `scripts/blender_render.py` | Renderiza os 1081 frames no Cycles em 720x1280 (retomável). |
@@ -65,16 +65,23 @@ antes da chegada na loja).
 
 ## Premissas sobre a localização
 
-- A Av. Barão de Araruna tem numeração métrica (nº ≈ metros desde o início, a sudeste), confirmada pelos
-  endereços de pontos comerciais próximos. O nº 885 fica a ~925 m do início da avenida, ~140 m depois do
-  Hospital São Paulo (nº 737), no lado dos números ímpares (sudoeste). Margem estimada: ±30 m.
-- Júnior Bike e Vila Pet não aparecem na base de dados; a etiqueta da Júnior Bike fica do outro lado da avenida,
-  em frente à loja, e a Vila Pet aparece só no cartão.
-- Para ajustar o ponto exato, mude `STORE_ALONG_M` / `STORE_SIDE_OFFSET_M` em `scripts/config.py`.
+- O nº 885 vem do cadastro de endereços do Pará (OpenAddresses, no tema `addresses` do Overture): os dois pontos
+  com esse número ficam ~560 m depois da esquina com a Av. Vinícius de Moraes. A numeração da avenida não é
+  métrica a partir da ponta do traçado; a primeira versão do vídeo supunha isso e errava o ponto em ~300 m.
+- Lados da avenida, segundo a dona da loja: a loja, o Hospital São Paulo e a Arena Verde (Arena do Município Verde)
+  ficam do mesmo lado (nordeste, à direita de quem vem da Vinícius de Moraes). A Júnior Bike fica em frente, no
+  lado do posto da esquina. A Vila Pet fica à direita da loja para quem olha da avenida.
+- O Hospital São Paulo foi posicionado pelo Google Maps (de frente para a R. Caravelas). O ponto do Overture
+  ficava ~300 m antes e do outro lado da avenida.
+- Júnior Bike e Vila Pet não aparecem nas bases de dados: as etiquetas ficam no lote em frente à loja e no
+  vizinho da direita.
+- Para ajustar, mude `STORE_ALONG_M`, `STORE_SIDE_OFFSET_M`, `VILA_PET_ALONG_M` ou `HOSPITAL_SAO_PAULO` em
+  `scripts/config.py`.
 
 ## Créditos dos dados e modelos
 
 - Mapa: © colaboradores do OpenStreetMap (ODbL), Overture Maps Foundation, Google Open Buildings (CC BY 4.0).
+- Endereços: cadastro de endereços do Pará (OpenAddresses, via Overture Maps), usado só para posicionar a loja.
 - Imagem de satélite: contém dados modificados do Copernicus Sentinel-2 (2026), processados pela Element 84.
 - Voz: Supertonic 3 (Supertone Inc., OpenRAIL-M), via sherpa-onnx. Conferência de pronúncia: Whisper turbo.
 - Fonte: Montserrat (SIL OFL 1.1, via @fontsource).
