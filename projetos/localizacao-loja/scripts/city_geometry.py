@@ -200,9 +200,7 @@ def build_buildings(route_line, stadium=None):
                 continue
             bid = r["id"]
             area = poly.area
-            if stadium and is_grandstand(poly, stadium[0]):
-                grandstand(walls, poly, np.asarray(stadium[1].centroid.coords[0]), rand01(bid, "s"))
-                polys.append(poly)
+            if stadium and (poly.intersection(stadium["arena"]).area > 0.5 * area or poly.intersects(stadium["front"])):
                 continue
             h, mat, wall = building_params(bid, poly, area, sat)
             floors = 2 if h > 5.5 else 1
@@ -260,64 +258,102 @@ def load_stadium():
     return (arena, pitch) if pitch is not None else None
 
 
-def is_grandstand(poly, arena):
-    if not poly.intersects(arena) or poly.intersection(arena).area < 0.9 * poly.area:
-        return False
-    _, _, _, L, W = rect_frame(poly)
-    return L >= 35 and L / max(W, 1e-3) >= 2.2
+def avenue_line():
+    """Eixo da Av. Barão de Araruna (coordenadas locais)."""
+    rows = pq.read_table(OV / "segments.parquet").to_pylist()
+    av = [to_local(from_wkb(r["geometry"])) for r in rows if "Araruna" in ((r["names"] or {}).get("primary") or "")]
+    av = shapely.line_merge(shapely.MultiLineString([list(a.coords) for a in av]))
+    return av if av.geom_type == "LineString" else max(av.geoms, key=lambda a: a.length)
 
 
-def grandstand(buf, poly, pitch_center, seed):
-    """Arquibancada de concreto: degraus subindo para longe do campo, guarda-corpo, muro de fundo e laterais."""
-    c, _, _, _, _ = rect_frame(poly)
-    if np.hypot(*((c[2] + c[3]) / 2 - pitch_center)) < np.hypot(*((c[0] + c[1]) / 2 - pitch_center)):
-        c = np.roll(c, 2, axis=0)            # c0-c1 vira a frente (lado voltado para o campo)
-    a = c[0]
-    L = float(np.hypot(*(c[1] - c[0])))
-    ax = (c[1] - c[0]) / L
-    D = float(np.hypot(*(c[3] - c[0])))
-    n = (c[3] - c[0]) / D                    # para trás, longe do campo
-    rows = max(5, int(D / 0.9))
-    d = D / rows
-    h0, step = 1.1, 0.45
-    col = dict(r=0.66, g=0.65, b=0.62, seed=seed, floors=0)
+def stadium_layout(found):
+    """Arena: campo, arquibancada em volta e, de frente para a Barão de Araruna, pátio asfaltado e pórtico de entrada
+    (como no Street View: viga e colunas amarelas, parede verde com portões e o letreiro em cima)."""
+    if not found:
+        return None
+    arena, pitch = found
+    c, ax, ay, L, W = rect_frame(pitch)
+    center = c.mean(axis=0)
+    av = avenue_line()
+    q = av.interpolate(av.project(shapely.Point(center)))
+    if (np.array([q.x, q.y]) - center) @ ax > 0:
+        ax = -ax                              # ax aponta da avenida para dentro do estádio
+    d_c = float(np.hypot(q.x - center[0], q.y - center[1]))
 
-    def P(s_, t_, z):
-        p = a + ax * s_ + n * t_
-        return (p[0], p[1], z)
-    z_prev = 0.0
-    prof = [(0.0, 0.0)]
-    for i in range(rows):
-        z = h0 + i * step
-        t0, t1 = i * d, (i + 1) * d
-        buf.add([P(0, t0, z_prev), P(L, t0, z_prev), P(L, t0, z), P(0, t0, z)], [(0, z_prev), (L, z_prev), (L, z), (0, z)], **col)
-        buf.add([P(0, t0, z), P(L, t0, z), P(L, t1, z), P(0, t1, z)], [(0, z), (L, z), (L, z + d), (0, z + d)], **col)
-        prof += [(t0, z), (t1, z)]
-        z_prev = z
-    top = z_prev + 1.1
-    for face in ([P(0, D - 0.2, z_prev), P(L, D - 0.2, z_prev), P(L, D - 0.2, top), P(0, D - 0.2, top)],   # guarda-corpo (dentro)
-                 [P(0, D - 0.2, top), P(L, D - 0.2, top), P(L, D, top), P(0, D, top)],                    # topo do guarda-corpo
-                 [P(L, D, 0), P(0, D, 0), P(0, D, top), P(L, D, top)]):                                   # muro de fundo
-        buf.add(face, [(0, 0), (L, 0), (L, top), (0, top)], **col)
-    prof += [(D, top), (D, 0.0)]
-    for s_ in (0.0, L):
-        side = [P(s_, t_, z) for t_, z in prof]
-        buf.add(side if s_ else side[::-1], [(t_, z) for t_, z in prof] if s_ else [(t_, z) for t_, z in prof][::-1], **col)
+    def P(s_, t_):                            # s: metros a partir do eixo da avenida, para dentro; t: ao longo dela
+        return center - ax * (d_c - s_) + ay * t_
+    lay = {"arena": arena, "pitch": pitch, "rect": pitch.minimum_rotated_rectangle, "P": P, "ax": ax, "ay": ay}
+    # o prédio da entrada vai da frente (23 m do eixo da avenida) até encostar na arquibancada (como no Google Maps)
+    back = d_c - L / 2 - 26.0
+    lay["front_s"], lay["depth"], lay["half"] = 23.0, max(18.0, back - 23.0), 30.0
+    lay["portico"] = shapely.Polygon([P(23.0, -31), P(23.0, 31), P(23.0 + lay["depth"], 31), P(23.0 + lay["depth"], -31)])
+    lay["plaza"] = shapely.Polygon([P(10.5, -46), P(10.5, 46), P(23.0, 46), P(23.0, -46)])
+    lay["front"] = shapely.union_all([lay["portico"], lay["plaza"]])
+    return lay
 
 
-def build_stadium(stadium, building_polys):
-    """Pista em volta do campo (o anel claro que aparece no satélite)."""
-    track = MeshBuf(("seed",))
-    if not stadium:
-        return track, shapely.GeometryCollection()
-    arena, pitch = stadium
-    rect = pitch.minimum_rotated_rectangle
-    ring = rect.buffer(10.0, quad_segs=12).difference(rect.buffer(3.5, quad_segs=12)).intersection(arena)
-    ring = ring.difference(shapely.union_all([b.buffer(0.3) for b in building_polys if b.intersects(arena)]))
+def build_stadium(lay):
+    """Pista, arquibancada em anel, pórtico com colunas e pátio. Devolve as malhas, a área livre de árvores e o
+    ponto do letreiro (x, y, z, ângulo)."""
+    track, stands, plaza = MeshBuf(("seed",)), MeshBuf(("seed",)), MeshBuf(("seed",))
+    portico = MeshBuf(("r", "g", "b", "seed", "floors"))
+    if not lay:
+        return track, stands, plaza, portico, shapely.GeometryCollection(), None
+    rect, P, ax = lay["rect"], lay["P"], lay["ax"]
+    ring = rect.buffer(10.0, quad_segs=12).difference(rect.buffer(3.5, quad_segs=12))
     for p in getattr(ring, "geoms", [ring]):
         if p.geom_type == "Polygon" and p.area > 2:
             add_flat(track, p, 0.03, dict(seed=0.0))
-    return track, rect.buffer(10.0)
+    # arquibancada: anel de 11 a 27 m do campo, subindo de 0,8 m a 7,2 m (degraus desenhados no material)
+    inner, outer = 11.0, 27.0
+    bowl = rect.buffer(outer, quad_segs=12).difference(rect.buffer(inner, quad_segs=12)).difference(lay["portico"].buffer(1.0))
+    bowl = bowl.intersection(lay["arena"].buffer(5.0))
+
+    def zb(x, y):
+        d = shapely.Point(x, y).distance(rect)
+        return 0.8 + min(max((d - inner) / (outer - inner), 0.0), 1.0) * 6.4
+    for p in getattr(bowl, "geoms", [bowl]):
+        if p.geom_type != "Polygon" or p.area < 5:
+            continue
+        p = shapely.segmentize(p, 6.0)
+        for tri in triangulate(p):
+            pts = [(q[0], q[1], zb(q[0], q[1])) for q in tri]
+            stands.add(pts, [(0.0, shapely.Point(q[0], q[1]).distance(rect) - inner) for q in tri], seed=0.0)
+        for ring_ in [p.exterior] + list(p.interiors):
+            cc = ccw(ring_.coords, want_ccw=ring_ is p.exterior)
+            for a, b in zip(cc, np.roll(cc, -1, axis=0)):
+                za, zb_ = zb(*a), zb(*b)
+                stands.add([(a[0], a[1], 0.0), (b[0], b[1], 0.0), (b[0], b[1], zb_), (a[0], a[1], za)],
+                           [(0.0, -1.0), (0.0, -1.0), (0.0, -1.0), (0.0, -1.0)], seed=1.0)
+    # pátio asfaltado entre a calçada e o pórtico
+    add_flat(plaza, lay["plaza"], 0.05, dict(seed=0.0))
+    # pórtico: cobertura com viga amarela sobre colunas, corpo com parede verde e portões
+    yellow, green, dark, white, roof = hexrgb("#f0c22e"), hexrgb("#3e8b4f"), hexrgb("#1f4d2c"), hexrgb("#ecebe6"), hexrgb("#c9ccce")
+    f0, D, H = lay["front_s"], lay["depth"], lay["half"]
+
+    def box(s0, s1, t0, t1, z0, z1, col, top=None):
+        a, b, c_, d = P(s0, t0), P(s0, t1), P(s1, t1), P(s1, t0)
+        k = dict(r=col[0], g=col[1], b=col[2], seed=0.3, floors=0)
+        for e0, e1 in ((a, b), (b, c_), (c_, d), (d, a)):
+            Ln = float(np.hypot(*(e1 - e0)))
+            portico.add([(e0[0], e0[1], z0), (e1[0], e1[1], z0), (e1[0], e1[1], z1), (e0[0], e0[1], z1)],
+                        [(0, 1 + z0), (Ln, 1 + z0), (Ln, 1 + z1), (0, 1 + z1)], **k)
+        if top is not None:
+            k = dict(r=top[0], g=top[1], b=top[2], seed=0.3, floors=0)
+            portico.add([(a[0], a[1], z1), (b[0], b[1], z1), (c_[0], c_[1], z1), (d[0], d[1], z1)], [(0, 9), (1, 9), (1, 10), (0, 10)], **k)
+            portico.add([(d[0], d[1], z0), (c_[0], c_[1], z0), (b[0], b[1], z0), (a[0], a[1], z0)], [(0, 9), (1, 9), (1, 10), (0, 10)], **k)
+    box(f0 + 5.0, f0 + D, -H, H, 0.0, 5.6, white)                     # corpo do prédio
+    box(f0 + 4.9, f0 + 5.0, -H, H, 0.0, 5.6, green)                   # parede verde da frente
+    for t_ in (-19.5, -6.5, 6.5, 19.5):                                # portões
+        box(f0 + 4.8, f0 + 4.9, t_ - 2.0, t_ + 2.0, 0.0, 3.3, dark)
+    box(f0, f0 + D, -H - 1.0, H + 1.0, 5.6, 6.3, yellow, top=roof)    # laje da cobertura (viga amarela nas bordas)
+    for i in range(9):                                                 # colunas
+        t_ = -H + i * (2 * H / 8)
+        box(f0 + 0.3, f0 + 0.9, t_ - 0.3, t_ + 0.3, 0.0, 5.6, yellow)
+    sp = P(f0 + 0.4, 0.0)
+    sign = [float(sp[0]), float(sp[1]), 6.3, float(math.atan2(-ax[0], ax[1]))]
+    keep_clear = shapely.union_all([lay["arena"], lay["front"].buffer(5.0)])
+    return track, stands, plaza, portico, keep_clear, sign
 
 
 def pitched_roof(roofs, gables, c, h, kind, rattrs, wattrs):
@@ -459,7 +495,7 @@ def road_meshes():
 NO_LOT_USES = {"stadium", "pitch", "park", "playground", "garden", "school", "university", "college", "hospital", "cemetery"}
 
 
-def build_walls(building_polys, paved, unpaved, route_line):
+def build_walls(building_polys, paved, unpaved, route_line, keep_open=None):
     """Muros de lote: frente da quadra (com portões), divisas perpendiculares à rua e muro de fundo (perto do trajeto)."""
     rng = np.random.default_rng(11)
     roads = shapely.union_all([paved, unpaved]).buffer(2.2)
@@ -552,7 +588,10 @@ def build_walls(building_polys, paved, unpaved, route_line):
                 if np.hypot(*(q - p)) < 25:
                     emit(shapely.LineString([p, q]).difference(obstacles).difference(no_lots), 1.8 + rng.uniform(-0.2, 0.3), wall_color(False), False)
         # frente da quadra
-        emit(blk.exterior.difference(obstacles), 2.1 + rng.uniform(-0.25, 0.3), wall_color(True), True)
+        front_line = blk.exterior.difference(obstacles)
+        if keep_open is not None:
+            front_line = front_line.difference(keep_open)
+        emit(front_line, 2.1 + rng.uniform(-0.25, 0.3), wall_color(True), True)
     print(f"  muros: {n_seg} trechos")
     return muros
 
@@ -761,22 +800,23 @@ def main():
     print("ruas…")
     roads, paved, unpaved, walk, center_all = road_meshes()
     print("prédios…")
-    stadium = load_stadium()
+    stadium = stadium_layout(load_stadium())
     walls, roofs, gables, props, bpolys = build_buildings(route_line, stadium)
-    track, track_area = build_stadium(stadium, bpolys)
+    track, stands, plaza, portico, stadium_area, sign = build_stadium(stadium)
     print("água…")
     water, water_u = build_water()
     print("muros…")
-    muros = build_walls(bpolys, paved, unpaved, route_line)
+    muros = build_walls(bpolys, paved, unpaved, route_line, stadium_area.buffer(3.0) if not stadium_area.is_empty else None)
     print("carros…")
     cars = build_cars(center_all, route_line, bpolys)
     print("árvores…")
     green = load_green_areas()
-    trees = build_trees(bpolys, paved, unpaved, walk, water_u, route_line, center_all, green, track_area)
+    trees = build_trees(bpolys, paved, unpaved, walk, water_u, route_line, center_all, green, stadium_area)
     grass = build_grass(green, bpolys)
     out = {}
     for name, buf in [("walls", walls), ("roofs", roofs), ("gables", gables), ("panels", props["panels"]), ("water", water),
-                      ("muros", muros), ("grass", grass), ("track", track)] + [(k, v) for k, v in roads.items()]:
+                      ("muros", muros), ("grass", grass), ("track", track), ("stands", stands), ("plaza", plaza),
+                      ("portico", portico)] + [(k, v) for k, v in roads.items()]:
         arrs = buf.arrays()
         if arrs is None:
             continue
@@ -785,6 +825,8 @@ def main():
     out["tanks"] = np.asarray(props["tanks"], np.float32).reshape(-1, 5)
     out["cars"] = cars
     out["trees"] = trees
+    if sign:
+        out["arena_sign"] = np.asarray(sign, np.float32)
     np.savez_compressed(CACHE / "city_geometry.npz", **out)
     print(f"ok em {time.time() - t0:.0f}s: " + ", ".join(f"{k.split('__')[0]}={len(v)}" for k, v in out.items() if k.endswith("__sizes")))
 

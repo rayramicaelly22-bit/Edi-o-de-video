@@ -15,7 +15,7 @@ trilha e efeitos.
 | 4 | `scripts/build_scene.py` | Geometria 3D: ruas com calçada e faixa, 28 mil prédios (telhado de quatro águas com cor tirada do satélite), água e ~29 mil árvores onde o satélite vê vegetação. |
 | 5 | `scripts/narration.py` | Narração com o Supertonic 3 (local), encaixada nos momentos do voo; tempos de cada palavra para as legendas. |
 | 6 | `scripts/audio.py` | Trilha sintetizada (Mi maior, 124,7 BPM, compassos alinhados com início da rota, virada e chegada), efeitos e mixagem com ducking. |
-| 7 | `scripts/city_geometry.py` | Cidade detalhada para o render realista: telhados de quatro e duas águas com beiral (cerâmica, fibrocimento, metal ou laje), oitões, caixas d'água, placas solares, calçada elevada com meio-fio, faixas, muros de lote com portões, grama das praças, carros estacionados, ~80 mil árvores (NDVI, quintais, calçadas e praças) e a Arena Verde (campo com marcação, pista e arquibancadas). |
+| 7 | `scripts/city_geometry.py` | Cidade detalhada para o render realista: telhados de quatro e duas águas com beiral (cerâmica, fibrocimento, metal ou laje), oitões, caixas d'água, placas solares, calçada elevada com meio-fio, faixas, muros de lote com portões, grama das praças, carros estacionados, ~80 mil árvores (NDVI, quintais, calçadas e praças) e a Arena Verde (campo com marcação, pista, arquibancada em volta e o pórtico de entrada com o letreiro). |
 | 8 | `npx tsx scripts/export_frames.ts` | Exporta a câmera e as animações de cada frame (`public/scene/frames.json`), as mesmas da Remotion. |
 | 9 | `scripts/blender_build.py` | Monta a cena no Blender: materiais procedurais, céu físico, sol, névoa atmosférica e animações (`.cache/cidade.blend`). |
 | 10 | `scripts/blender_render.py` | Renderiza os 1081 frames no Cycles em 720x1280 (retomável). |
@@ -66,15 +66,19 @@ antes da chegada na loja).
 ## Premissas sobre a localização
 
 - O nº 885 vem do cadastro de endereços do Pará (OpenAddresses, no tema `addresses` do Overture): os dois pontos
-  com esse número ficam ~560 m depois da esquina com a Av. Vinícius de Moraes. A numeração da avenida não é
-  métrica a partir da ponta do traçado; a primeira versão do vídeo supunha isso e errava o ponto em ~300 m.
+  com esse número ficam ~560 m depois da esquina com a Av. Vinícius de Moraes, e a dona da loja confirmou o prédio
+  num mapa de conferência. A numeração da avenida não é métrica a partir da ponta do traçado; a primeira versão do
+  vídeo supunha isso e errava o ponto em ~300 m.
 - Lados da avenida, segundo a dona da loja: a loja, o Hospital São Paulo e a Arena Verde (Arena do Município Verde)
   ficam do mesmo lado (nordeste, à direita de quem vem da Vinícius de Moraes). A Júnior Bike fica em frente, no
-  lado do posto da esquina. A Vila Pet fica à direita da loja para quem olha da avenida.
+  lado do posto da esquina. A Vila Pet é o prédio vizinho no sentido da R. Joaquim Aguiar (noroeste).
 - O Hospital São Paulo foi posicionado pelo Google Maps (de frente para a R. Caravelas). O ponto do Overture
   ficava ~300 m antes e do outro lado da avenida.
 - Júnior Bike e Vila Pet não aparecem nas bases de dados: as etiquetas ficam no lote em frente à loja e no
-  vizinho da direita.
+  vizinho de cima.
+- A Arena tem a frente na Barão de Araruna, sem casas na frente: pátio asfaltado e um pórtico com colunas e viga
+  amarelas, parede verde com portões e o letreiro em cima (Street View). Os prédios que o Overture põe dentro do
+  estádio e no pátio são ignorados; a arquibancada em anel segue o desenho do Google Maps.
 - Para ajustar, mude `STORE_ALONG_M`, `STORE_SIDE_OFFSET_M`, `VILA_PET_ALONG_M` ou `HOSPITAL_SAO_PAULO` em
   `scripts/config.py`.
 

@@ -29,15 +29,16 @@ PRACA_CELIO_MIRANDA = (-47.354900, -2.995580)   # Overture places: "Praça Celio
 HOSPITAL_SAO_PAULO = (-47.348602, -2.980975)
 LAGO_VERDE = (-47.346493, -2.998372)            # Overture places: "Lago Verde"
 
-# Posição do nº 885 ao longo da avenida (metros desde a ponta sudeste do traçado do Overture): média dos dois pontos
-# do nº 885 no cadastro de endereços do Pará (Overture addresses, fonte br/pa/statewide). A numeração não é métrica
-# a partir dessa ponta (o nº 737, do hospital, fica a ~1090 m).
+# Posição do nº 885 ao longo da avenida (metros desde a ponta sudeste do traçado do Overture). O cadastro de endereços
+# do Pará (Overture addresses, fonte br/pa/statewide) tem dois pontos com o nº 885, a 1218 e 1227 m; a dona da loja
+# confirmou o prédio num mapa de conferência. A numeração não é métrica a partir dessa ponta (o nº 737, do hospital,
+# fica a ~1090 m).
 STORE_NUMBER = 885
-STORE_ALONG_M = 1222.5
+STORE_ALONG_M = 1226.5
 # Lado da loja, pela dona: o mesmo da Arena do Município Verde e do Hospital São Paulo (nordeste, à direita de quem
 # vem da Vinícius de Moraes); a Júnior Bike fica em frente, no lado do posto da esquina. Positivo = sudoeste.
 STORE_SIDE_OFFSET_M = -14.0
-VILA_PET_ALONG_M = STORE_ALONG_M - 12.0   # à direita de quem olha a loja da avenida (sentido dos números menores)
+VILA_PET_ALONG_M = 1240.0   # prédio vizinho no sentido da R. Joaquim Aguiar (noroeste), confirmado pela dona
 ARENA_NAME = "Arena do Município Verde"   # nome no Overture (land_use); no vídeo, "Arena Verde"
 
 # Cenas Sentinel-2 L2A (Earth Search / Element 84) sem nuvem sobre a cidade, em ordem de prioridade

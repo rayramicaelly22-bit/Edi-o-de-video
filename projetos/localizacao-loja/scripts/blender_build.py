@@ -379,6 +379,18 @@ def mat_grass(N):
     return N.principled(c, 0.92, 0.0)
 
 
+def mat_stands(N):
+    """Arquibancada de concreto: faixas suaves de degraus (v = metros a partir da beira) e paredes lisas."""
+    pos = N.new("ShaderNodeNewGeometry").outputs["Position"]
+    v = N.separate(N.new("ShaderNodeUVMap", uv_map="UVMap").outputs["UV"])[1]
+    wall = N.attr("seed").outputs["Fac"]
+    rows = N.smooth(0.25, 0.5, N.math("FRACT", N.math("DIVIDE", v, 1.6)))
+    c = N.mix(rows, srgb("#9d9a93"), srgb("#c3c0b8"))
+    c = N.mix(wall, c, srgb("#d6d4cd"))
+    c = N.scale_color(c, N.math("ADD", 0.84, N.math("MULTIPLY", N.noise(pos, 0.4, 3.0, 0.6), 0.3)))
+    return N.principled(c, 0.9, 0.0)
+
+
 def mat_track(N):
     pos = N.new("ShaderNodeNewGeometry").outputs["Position"]
     n1 = N.noise(pos, 0.3, 3.0, 0.6)
@@ -537,6 +549,23 @@ def frond(origin, ang, length, width, droop, tilt):
     V = np.array(pts)
     F = [(2 * i, 2 * i + 1, 2 * i + 3, 2 * i + 2) for i in range(8)]
     return V, F
+
+
+def arena_sign():
+    """Letreiro verde "ARENA DO MUNICÍPIO VERDE" em cima da cobertura do pórtico, virado para a avenida."""
+    if "arena_sign" not in G:
+        return
+    x, y, z, ang = (float(v) for v in G["arena_sign"])
+    cu = bpy.data.curves.new("letreiro", "FONT")
+    cu.body = "ARENA DO MUNICÍPIO VERDE"
+    cu.size = 1.5
+    cu.extrude = 0.08
+    cu.align_x = "CENTER"
+    ob = bpy.data.objects.new("letreiro", cu)
+    ob.location = (x, y, z + 0.05)
+    ob.rotation_euler = (math.pi / 2, 0.0, ang)
+    sc.collection.objects.link(ob)
+    cu.materials.append(material("letreiro", mat_simple("#1f8a3c", 0.45)))
 
 
 def make_tree_variants():
@@ -847,7 +876,12 @@ def build():
     mesh_from_npz("muros", "muros", m_wall)
     mesh_from_npz("telhados", "roofs", m_roof)
     mesh_from_npz("placas_solares", "panels", material("placa_solar", mat_panel))
-    mesh_from_npz("asfalto", "asphalt", material("asfalto", mat_asphalt))
+    m_asphalt = material("asfalto", mat_asphalt)
+    mesh_from_npz("asfalto", "asphalt", m_asphalt)
+    mesh_from_npz("patio_arena", "plaza", m_asphalt)
+    mesh_from_npz("arquibancada", "stands", material("arquibancada", mat_stands))
+    mesh_from_npz("portico_arena", "portico", m_wall)
+    arena_sign()
     mesh_from_npz("terra", "dirt", material("terra", mat_dirt))
     mesh_from_npz("calcada", "sidewalk", material("calcada", mat_sidewalk))
     mesh_from_npz("meio_fio", "curb", material("meio_fio", mat_concrete))

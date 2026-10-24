@@ -84,7 +84,7 @@ export const LocalizacaoLoja: React.FC = () => {
         accent="#ff9f1c"
         stem={120}
         layout="side"
-        side="right"
+        side="left"
         rise={-60}
       />
       <NavBanner />
