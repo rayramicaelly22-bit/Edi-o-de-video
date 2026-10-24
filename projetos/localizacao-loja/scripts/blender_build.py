@@ -921,6 +921,12 @@ def build():
     ring_start.scale = (150, 150, 1)
     pin = make_pin()
     pin.visible_shadow = False   # elemento gráfico: a sombra de um pin de 70 m parecia um buraco no chão
+    # rota, anéis e pin são grafismos: brilham, mas não iluminam a cena nem fazem sombra (menos ruído e menos custo)
+    for name in ("rota", "rota_brilho", "brilho_ponta", "anel_loja", "anel_praca", "pin", "pin_furo"):
+        if name in bpy.data.materials:
+            bpy.data.materials[name].cycles.emission_sampling = "NONE"
+    for ob in (ribbons["rota"][0], ribbons["rota_brilho"][0], head, ring_store, ring_start):
+        ob.visible_shadow = False
 
     print("luz…", flush=True)
     world = bpy.data.worlds.new("ceu")

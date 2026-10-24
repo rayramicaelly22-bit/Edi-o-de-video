@@ -1,7 +1,7 @@
 """Renderiza frames da cena .cache/cidade.blend (montada por blender_build.py) em PNG.
 
 Uso: python scripts/blender_render.py [--frames 91,301 | --range 1-1081] [--out DIR] [--samples N] [--percent P]
-                                      [--threads T --part i/n] [--gpu] [--blur] [--max]
+                                      [--res WxH] [--threads T --part i/n] [--gpu] [--blur] [--max]
 Frames já renderizados são pulados, então dá para interromper e retomar a renderização completa.
 Com --part, cada processo pega um frame a cada n (ex.: dois processos com 2 threads cada, --part 0/2 e --part 1/2),
 o que sobrepõe as etapas de preparação da cena, que usam um núcleo só.
@@ -23,6 +23,7 @@ ap.add_argument("--range", default=None, help="intervalo a-b")
 ap.add_argument("--out", default=str(ROOT / "out/cycles"))
 ap.add_argument("--samples", type=int, default=None)
 ap.add_argument("--percent", type=int, default=None)
+ap.add_argument("--res", default=None, help="resolução exata, ex.: 720x1280 (o pós amplia para 1080x1920)")
 ap.add_argument("--blend", default=str(ROOT / ".cache/cidade.blend"))
 ap.add_argument("--threads", type=int, default=0)
 ap.add_argument("--part", default="0/1")
@@ -41,6 +42,9 @@ if args.samples:
     sc.cycles.samples = args.samples
 if args.percent:
     sc.render.resolution_percentage = args.percent
+if args.res:
+    sc.render.resolution_x, sc.render.resolution_y = (int(v) for v in args.res.lower().split("x"))
+    sc.render.resolution_percentage = 100
 if args.threads:
     sc.render.threads_mode = "FIXED"
     sc.render.threads = args.threads
