@@ -5,6 +5,8 @@
     "studio": "remotion studio",
     "render:3d": "remotion render Drone3D out/drone3d.mp4 --gl=swangle --concurrency=2 --crf=10",
     "grade": "scripts/grade.sh out/drone3d.mp4 public/render/drone3d_graded.mp4",
+    "export:frames": "tsx scripts/export_frames.ts",
+    "post:cycles": "scripts/cycles_post.sh",
     "render": "scripts/finalize.sh out/localizacao-loja.mp4"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "@remotion/renderer": "4.0.538",
     "@types/react": "19.3.0",
     "@types/three": "0.186.0",
+    "tsx": "4.23.15",
     "typescript": "5.9.3"
   }
 }

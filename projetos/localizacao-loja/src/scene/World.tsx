@@ -2,9 +2,8 @@ import React, {useLayoutEffect, useMemo} from "react";
 import * as THREE from "three";
 import {useThree} from "@react-three/fiber";
 import {useCurrentFrame, useVideoConfig} from "remotion";
-import {T} from "../timeline";
-import {cameraAt, routeProgress} from "./camera";
-import {routePoint} from "./route";
+import {animState} from "./animation";
+import {cameraAt} from "./camera";
 import type {SceneAssets} from "./load";
 
 // Sol de oés-sudoeste: luz de 3/4 em relação ao voo (para nordeste), sombras visíveis à direita.
@@ -435,39 +434,27 @@ export const World: React.FC<{assets: SceneAssets}> = ({assets}) => {
     sc.far = 7000;
     sc.updateProjectionMatrix();
 
-    // rota
-    const s = routeProgress(route, t);
-    const halfWidth = Math.max(4.2, cam.dist * 0.0105);
+    // rota, anéis e brilho da ponta (animation.ts é compartilhado com o exportador do Blender)
+    const anim = animState(t, route, pois);
     for (const m of [ribbonMat, glowMat]) {
-      m.uniforms.uProgress.value = s;
-      m.uniforms.uHalfWidth.value = m === glowMat ? halfWidth * 2.8 : halfWidth;
+      m.uniforms.uProgress.value = anim.routeProgress;
+      m.uniforms.uHalfWidth.value = m === glowMat ? anim.ribbonHalfWidth * 2.8 : anim.ribbonHalfWidth;
     }
-    ring.uniforms.uOpacity.value = Math.min(1, Math.max(0, (t - (T.arrive - 1.0)) / 1.0));
-    ring.uniforms.uPhase.value = (t * 0.45) % 1;
-    // anel na praça enquanto a narração fala do centro
-    const inStart = Math.min(1, Math.max(0, (t - (T.descentEnd - 0.6)) / 0.6));
-    const outStart = Math.min(1, Math.max(0, (T.routeStart + 2.0 - t) / 1.0));
-    startRing.uniforms.uOpacity.value = inStart * outStart;
-    startRing.uniforms.uPhase.value = (t * 0.6) % 1;
-    // brilho na ponta da rota, só enquanto ela anda
-    const on = Math.min(1, Math.max(0, (t - T.routeStart) / 0.4)) * Math.min(1, Math.max(0, (T.arrive + 0.3 - t) / 0.5));
-    headGlow.uniforms.uOpacity.value = on;
+    ring.uniforms.uOpacity.value = anim.storeRing.opacity;
+    ring.uniforms.uPhase.value = anim.storeRing.phase;
+    startRing.uniforms.uOpacity.value = anim.startRing.opacity;
+    startRing.uniforms.uPhase.value = anim.startRing.phase;
+    headGlow.uniforms.uOpacity.value = anim.headGlow.opacity;
   }, [t, camera, scene, route, pois, sun, fog, ribbonMat, glowMat, ring, startRing, headGlow]);
 
-  const cam = cameraAt(t, route, pois);
+  const anim = animState(t, route, pois);
+  const cam = anim.cam;
   const skyRadius = 0.8 * cam.far;
   const camPos = cam.position;
-  // pin da loja: cai com um quique quando a rota começa, mantém tamanho legível de longe
   const store = pois.store;
-  const pinH = Math.max(30, cam.dist * 0.095);
-  const drop = Math.min(1, Math.max(0, (t - (T.routeStart + 0.2)) / 0.8));
-  const easeOutBack = (x: number) => 1 + 2.4 * Math.pow(x - 1, 3) + 1.4 * Math.pow(x - 1, 2);
-  const pop = 1 + 0.18 * Math.exp(-Math.pow((t - T.arrive) / 0.35, 2));
-  const pinScale = pinH * (drop <= 0 ? 0 : easeOutBack(drop)) * pop;
-  const pinY = 3 + pinH * 0.07 * Math.sin(t * 2.4) + (1 - Math.min(1, drop * 1.4)) * pinH * 2;
-  const pinYaw = Math.atan2(camPos[0] - store[0], camPos[2] - store[1]);
-  const head = routePoint(route, routeProgress(route, t));
-  const headSize = Math.max(4.2, cam.dist * 0.0105) * 7;
+  const {scale: pinScale, y: pinY, yaw: pinYaw} = anim.pin;
+  const head: [number, number] = [anim.headGlow.x, anim.headGlow.z];
+  const headSize = anim.headGlow.size;
 
   return (
     <>

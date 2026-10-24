@@ -6,5 +6,7 @@ public/render/
 # assets gerados pesados (scripts/fetch_satellite.py e scripts/build_scene.py)
 public/scene/scene.bin
 public/scene/*.jpg
+# câmera e animações por frame para o Blender (scripts/export_frames.ts)
+public/scene/frames.json
 # cache do Python
 __pycache__/
